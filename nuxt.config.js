@@ -6,8 +6,8 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - frontend-clinica',
-    title: 'frontend-clinica',
+    titleTemplate: '%s - frontend-healthy',
+    title: 'frontend-healthy',
     htmlAttrs: {
       lang: 'en'
     },
@@ -28,6 +28,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    '@/plugins/ui-components.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -85,11 +86,10 @@ export default {
       }
     }
   },
-
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    baseURL: '/'
+    baseURL: 'http://localhost:5010'
   },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify

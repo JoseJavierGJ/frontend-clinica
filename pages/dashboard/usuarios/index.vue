@@ -26,7 +26,7 @@
             </v-col>
             <v-col cols="6">
               <v-btn icon color="warning" @click="updateUser(item)">
-                <v-icon>mdi-account</v-icon>
+                <v-icon>mdi-account-edit</v-icon>
               </v-btn>
             </v-col>
           </v-row>

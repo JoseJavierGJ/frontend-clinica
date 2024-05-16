@@ -146,7 +146,7 @@ export default {
   methods: {
     async login () {
       // eslint-disable-next-line no-console
-      await console.log('@@@ datos => ', this.email, this.password)
+      await console.log('@@@ datos => ', this.email, this.password, this.nombre)
       const sendData = {
         email: this.email,
         password: this.password
@@ -158,6 +158,7 @@ export default {
         const result = await res.data
         if (result.message === 'success') {
           localStorage.setItem('userEmail', this.email)
+          localStorage.setItem('userNombre', this.userNombre)
           this.$router.push('/dashboard')
         }
       }).catch((err) => {
@@ -214,5 +215,9 @@ export default {
 .fontTitle {
   font-size: 52px!important;
   line-height: 78px!important;
+}
+.html {
+    /* height: 100%; */
+    overflow: hidden;
 }
 </style>

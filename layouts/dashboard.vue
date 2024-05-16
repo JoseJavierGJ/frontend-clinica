@@ -53,6 +53,9 @@
         <div>
           {{ userEmail }}
         </div>
+        <div>
+          {{ userNombre }}
+        </div>
         <v-btn
           color="#c8a2c8"
           class="dark--text rounded-pill"
@@ -91,6 +94,7 @@ export default {
     return {
       drawer: null,
       userEmail: '',
+      userNombre: '',
       hover: false,
       links: [
         { icon: 'mdi-calendar', text: 'Schedule', route: '/dashboard/schedule' },
@@ -101,11 +105,16 @@ export default {
   },
   mounted () {
     this.fetchUserEmail()
+    this.fetchUserNombre()
   },
   methods: {
     fetchUserEmail () {
       const email = localStorage.getItem('userEmail')
       this.userEmail = email || 'No disponible'
+    },
+    fetchUserNombre () {
+      const nombre = localStorage.getItem('userNombre')
+      this.userNombre = nombre || 'No disponible'
     },
     logout () {
       localStorage.removeItem('userEmail')
@@ -134,4 +143,13 @@ export default {
   border-radius: 25px;
 }
 
+.v-main {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.v-navigation-drawer__content {
+    height: 100%;
+    overflow: hidden;
+}
 </style>

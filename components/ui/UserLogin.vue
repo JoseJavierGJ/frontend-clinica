@@ -157,7 +157,7 @@ export default {
         // eslint-disable-next-line no-console
         const result = await res.data
         if (result.message === 'success') {
-          this.$store.commit('setToken', result.token)
+          localStorage.setItem('userEmail', this.email)
           this.$router.push('/dashboard')
         }
       }).catch((err) => {

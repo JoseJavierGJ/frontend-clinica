@@ -1,31 +1,29 @@
 <template>
   <v-col cols="12">
+    <!-- Botón para añadir un nuevo paciente -->
     <v-row>
       <v-btn block color="#123CCC" @click="showDialog = true">
         <span style="text-transform: none; color: white">
-          Usuario Nuevo
+          Paciente Nuevo
         </span>
       </v-btn>
     </v-row>
+
+    <!-- Tabla de datos de los pacientes -->
     <v-row>
       <v-data-table
         :headers="headers"
-        :items="usuarios"
+        :items="pacientes"
       >
-        <template #[`item.email`]="{item}">
-          <span style="font-weight: 800;">
-            {{ item.email }}
-          </span>
-        </template>
-        <template #[`item.acciones`]="{item}">
+        <template #[`item.acciones`]="{ item }">
           <v-row>
             <v-col cols="6">
-              <v-btn icon color="red" @click="deleteUser(item)">
+              <v-btn icon color="red" @click="prepareToDelete(item)">
                 <v-icon>mdi-trash-can</v-icon>
               </v-btn>
             </v-col>
             <v-col cols="6">
-              <v-btn icon color="warning" @click="updateUser(item)">
+              <v-btn icon color="warning" @click="updatePatient(item)">
                 <v-icon>mdi-account-edit</v-icon>
               </v-btn>
             </v-col>
@@ -33,19 +31,15 @@
         </template>
       </v-data-table>
     </v-row>
-    <v-dialog
-      v-model="showDialog"
-      persistent
-      width="500"
-      transition="dialog-bottom-transition"
-    >
+
+    <!-- Diálogo para agregar nuevo paciente -->
+    <v-dialog v-model="showDialog" persistent width="500" transition="dialog-bottom-transition">
       <v-card>
-        <v-card-title>Agregar Usuarios</v-card-title>
+        <v-card-title>Agregar Paciente</v-card-title>
         <v-card-text>
-          <v-row width="100%">
+          <v-row v-row width="100%">
             <v-text-field
               v-model="nombre"
-              class="pa-2 ma-2"
               label="Nombre"
               placeholder="Escribe el nombre"
               outlined
@@ -53,7 +47,6 @@
           </v-row><v-row width="100%">
             <v-text-field
               v-model="apaterno"
-              class="pa-2 ma-2"
               label="Apellido paterno"
               placeholder="Escribe el apellido paterno"
               outlined
@@ -62,7 +55,6 @@
           <v-row width="100%">
             <v-text-field
               v-model="amaterno"
-              class="pa-2 ma-2"
               label="Apellido materno"
               placeholder="Escribe el apellido materno"
               outlined
@@ -70,165 +62,98 @@
           </v-row>
           <v-row width="100%">
             <v-text-field
-              v-model="especialidad"
-              class="pa-2 ma-2"
-              label="Epecialidad"
-              placeholder="Escribe la especialidad"
+              v-model="fechaNacimiento"
+              label="Fecha de Nacimiento"
+              placeholder="Escribe la fecha de nacimiento"
               outlined
             />
           </v-row>
           <v-row width="100%">
             <v-text-field
               v-model="telefono"
-              class="pa-2 ma-2"
-              label="Telefono"
-              placeholder="Escribe el telefono"
+              label="Teléfono"
+              placeholder="Escribe el teléfono"
               outlined
             />
           </v-row>
           <v-row width="100%">
             <v-text-field
-              v-model="email"
-              class="pa-2 ma-2"
-              label="Correo"
-              placeholder="Escribre tu Password"
+              v-model="historialMedico"
+              label="Historial Médico"
+              placeholder="Describe el historial médico"
               outlined
-            />
-          </v-row>
-          <v-row width="100%">
-            <v-text-field
-              v-model="password"
-              class="pa-2 ma-2"
-              label="Password"
-              placeholder="Escribre tu Password"
-              outlined
-              type="password"
+              multiline
             />
           </v-row>
         </v-card-text>
         <v-card-actions>
           <v-col cols="6">
-            <v-btn block color="green" @click="registrarUsuario">
-              <span style="text-transform: none; color: white;">
-                Registrar
-              </span>
+            <v-btn block color="green" @click="registrarPaciente">
+              <span style="text-transform: none; color: white;">Registrar</span>
             </v-btn>
           </v-col>
           <v-col cols="6">
             <v-btn block color="red" @click="showDialog = false">
-              <span style="text-transform: none; color: white;">
-                Cancelar
-              </span>
-            </v-btn>
-          </v-col>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-    <v-dialog v-model="showDelete" width="300" persistent>
-      <v-card>
-        <v-card-title>Delete User</v-card-title>
-        <v-card-text>Are you sure?</v-card-text>
-        <v-card-actions>
-          <v-col cols="6">
-            <v-btn block color="green" @click="borrarUsuario">
-              <span style="text-transform: none; color: white;">Borrar</span>
-            </v-btn>
-          </v-col>
-          <v-col cols="6">
-            <v-btn block color="red" @click="showDelete=false">
               <span style="text-transform: none; color: white;">Cancelar</span>
             </v-btn>
           </v-col>
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-dialog
-      v-model="showUpdate"
-      persistent
-      width="500"
-      transition="dialog-bottom-transition"
-    >
+
+    <!-- Diálogo para actualizar paciente -->
+    <v-dialog v-model="showUpdate" persistent width="500" transition="dialog-bottom-transition">
       <v-card>
-        <v-card-title>Actualizar Usuario</v-card-title>
+        <v-card-title>Actualizar Paciente</v-card-title>
         <v-card-text>
-          <v-row width="100%">
-            <v-text-field
-              v-model="userToUpdate.nombre"
-              class="pa-2 ma-2"
-              label="Nombre"
-              placeholder="Escribe el nombre"
-              outlined
-            />
+          <v-row>
+            <v-text-field v-model="patientToUpdate.nombre" label="Nombre" placeholder="Escribe el nombre" outlined />
           </v-row>
-          <v-row width="100%">
-            <v-text-field
-              v-model="userToUpdate.apaterno"
-              class="pa-2 ma-2"
-              label="Apellido paterno"
-              placeholder="Escribe el apellido paterno"
-              outlined
-            />
+          <v-row>
+            <v-text-field v-model="patientToUpdate.apaterno" label="Apellido Paterno" placeholder="Escribe el apellido paterno" outlined />
           </v-row>
-          <v-row width="100%">
-            <v-text-field
-              v-model="userToUpdate.amaterno"
-              class="pa-2 ma-2"
-              label="Apellido materno"
-              placeholder="Escribe el apellido materno"
-              outlined
-            />
+          <v-row>
+            <v-text-field v-model="patientToUpdate.amaterno" label="Apellido Materno" placeholder="Escribe el apellido materno" outlined />
           </v-row>
-          <v-row width="100%">
-            <v-text-field
-              v-model="userToUpdate.especialidad"
-              class="pa-2 ma-2"
-              label="Epecialidad"
-              placeholder="Escribe la especialidad"
-              outlined
-            />
+          <v-row>
+            <v-text-field v-model="patientToUpdate.fechaNacimiento" label="Fecha de Nacimiento" placeholder="Escribe la fecha de nacimiento" outlined />
           </v-row>
-          <v-row width="100%">
-            <v-text-field
-              v-model="userToUpdate.telefono"
-              class="pa-2 ma-2"
-              label="Telefono"
-              placeholder="Escribe el telefono"
-              outlined
-            />
+          <v-row>
+            <v-text-field v-model="patientToUpdate.telefono" label="Teléfono" placeholder="Escribe el teléfono" outlined />
           </v-row>
-          <v-row width="100%">
-            <v-text-field
-              v-model="userToUpdate.email"
-              class="pa-2 ma-2"
-              label="Correo"
-              placeholder="Escribre tu Password"
-              outlined
-            />
-          </v-row>
-          <v-row width="100%">
-            <v-text-field
-              v-model="userToUpdate.password"
-              class="pa-2 ma-2"
-              label="Password"
-              placeholder="Escribre tu Password"
-              outlined
-              type="password"
-            />
+          <v-row>
+            <v-text-field v-model="patientToUpdate.historialMedico" label="Historial Médico" placeholder="Describe el historial médico" outlined multiline />
           </v-row>
         </v-card-text>
         <v-card-actions>
           <v-col cols="6">
-            <v-btn block color="green" @click="actualizarUsuario">
-              <span style="text-transform: none; color: white;">
-                Actualizar
-              </span>
+            <v-btn block color="green" @click="actualizarPaciente">
+              <span style="text-transform: none; color: white;">Actualizar</span>
             </v-btn>
           </v-col>
           <v-col cols="6">
             <v-btn block color="red" @click="showUpdate = false">
-              <span style="text-transform: none; color: white;">
-                Cancelar
-              </span>
+              <span style="text-transform: none; color: white;">Cancelar</span>
+            </v-btn>
+          </v-col>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Diálogo para confirmación de eliminación -->
+    <v-dialog v-model="showDelete" width="300" persistent>
+      <v-card>
+        <v-card-title>Eliminar Paciente</v-card-title>
+        <v-card-text>¿Estás seguro?</v-card-text>
+        <v-card-actions>
+          <v-col cols="6">
+            <v-btn block color="green" @click="deletePatient">
+              <span style="text-transform: none; color: white;">Borrar</span>
+            </v-btn>
+          </v-col>
+          <v-col cols="6">
+            <v-btn block color="red" @click="showDelete = false">
+              <span style="text-transform: none; color: white;">Cancelar</span>
             </v-btn>
           </v-col>
         </v-card-actions>
@@ -244,7 +169,7 @@ export default {
   auth: true,
   data () {
     return {
-      usuarios: [],
+      pacientes: [],
       headers: [
         {
           text: 'Nombre',
@@ -265,28 +190,22 @@ export default {
           sortable: true
         },
         {
-          text: 'Email',
-          value: 'email',
-          align: 'center',
-          sortable: true
-        },
-        // {
-        //   text: 'Password',
-        //   value: 'password',
-        //   align: 'center',
-        //   sortable: true
-        // },
-        {
-          text: 'Epecialidad',
-          value: 'especialidad',
+          text: 'Fecha de Nacimiento',
+          value: 'fechaNacimiento',
           align: 'center',
           sortable: true
         },
         {
-          text: 'Telefono',
+          text: 'Teléfono',
           value: 'telefono',
           align: 'center',
           sortable: true
+        },
+        {
+          text: 'Historial Médico',
+          value: 'historialMedico',
+          align: 'center',
+          sortable: false
         },
         {
           text: 'Acciones',
@@ -295,16 +214,15 @@ export default {
         }
       ],
       showDialog: false,
-      email: null,
-      password: null,
-      userToDelete: null,
       showDelete: false,
       nombre: null,
       apaterno: null,
       amaterno: null,
-      especialidad: null,
+      fechaNacimiento: null,
       telefono: null,
-      userToUpdate: {},
+      historialMedico: null,
+      patientToDelete: null,
+      patientToUpdate: {},
       showUpdate: false
     }
   },
@@ -314,93 +232,91 @@ export default {
     })
   },
   mounted () {
-    this.obtenerUsuarios()
+    this.obtenerPacientes()
   },
   methods: {
-    obtenerUsuarios () {
-      const url = '/get-all-users'
+    obtenerPacientes () {
+      const url = '/get-all-patients'
       this.$axios.get(url)
         .then((res) => {
-          // eslint-disable-next-line no-console
-          console.log('response => ', res)
           if (res.data.message === 'success') {
-            this.usuarios = res.data.users
+            this.pacientes = res.data.patients
           }
         })
         .catch((error) => {
           // eslint-disable-next-line no-console
-          console.log('error => ', error)
+          console.error('Error al obtener pacientes:', error)
         })
     },
-    registrarUsuario () {
-      const url = '/register'
+    registrarPaciente () {
+      const url = '/register-patient'
       const data = {
-        email: this.email,
-        password: this.password,
         nombre: this.nombre,
         apaterno: this.apaterno,
         amaterno: this.amaterno,
-        especialidad: this.especialidad,
-        telefono: this.telefono
+        fechaNacimiento: this.fechaNacimiento,
+        telefono: this.telefono,
+        historialMedico: this.historialMedico
       }
       this.$axios.post(url, data)
         .then((res) => {
-          // eslint-disable-next-line no-console
-          console.log('@@ res => ', res)
-          if (res.data.message === 'User registered successfully') {
+          if (res.data.message === 'Patient registered successfully') {
             this.showDialog = false
-            this.obtenerUsuarios()
+            this.obtenerPacientes()
           }
         })
         .catch((error) => {
           // eslint-disable-next-line no-console
-          console.log('@@ error => ', error)
+          console.error('Error al registrar paciente:', error)
         })
     },
-    borrarUsuario () {
-      const url = `/users/${this.userToDelete.email}`
-      // eslint-disable-next-line no-console
-      console.log('@@@ url => ', url)
+    borrarPaciente () {
+      const url = `/patients/${this.patientToDelete.id}`
       this.$axios.delete(url)
         .then((res) => {
-          // eslint-disable-next-line no-console
-          console.log('@@ res => , res')
           if (res.status === 204) {
             this.showDelete = false
-            this.obtenerUsuarios()
+            this.obtenerPacientes()
           }
         })
-        .catch((err) => {
+        .catch((error) => {
           // eslint-disable-next-line no-console
-          console.log('@@ err => ', err)
+          console.error('Error al eliminar paciente:', error)
         })
     },
-    deleteUser (user) {
-      this.userToDelete = user
+    prepareToDelete (patient) {
+      this.patientToDelete = patient
       this.showDelete = true
-      // eslint-disable-next-line no-console
-      console.log('@@@ user => ', this.userToDelete)
     },
-    updateUser (user) {
-      this.userToUpdate = user
+    deletePatient () {
+      if (!this.patientToDelete) { return }
+      const url = `/patients/${this.patientToDelete.id}`
+      this.$axios.delete(url)
+        .then(() => {
+          this.showDelete = false
+          this.obtenerPacientes() // Refrescar la lista después de eliminar
+        })
+        .catch((error) => {
+          // eslint-disable-next-line no-console
+          console.error('Error al eliminar paciente:', error)
+        })
+    },
+    updatePatient (patient) {
+      this.patientToUpdate = patient
       this.showUpdate = true
     },
-    actualizarUsuario () {
-      const url = `/users/${this.userToUpdate.email}`
-      // eslint-disable-next-line no-console
-      console.log('@@@ url => ', url)
-      this.$axios.put(url, this.userToUpdate)
+    actualizarPaciente () {
+      const url = `/patients/${this.patientToUpdate.id}`
+      this.$axios.put(url, this.patientToUpdate)
         .then((res) => {
-          // eslint-disable-next-line no-console
-          console.log('@@@ res => , res')
           if (res.data.message === 'success') {
             this.showUpdate = false
-            this.obtenerUsuarios()
+            this.obtenerPacientes()
           }
         })
-        .catch((err) => {
+        .catch((error) => {
           // eslint-disable-next-line no-console
-          console.log('@@ err => ', err)
+          console.error('Error al actualizar paciente:', error)
         })
     }
   }

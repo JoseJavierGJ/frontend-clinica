@@ -1,165 +1,92 @@
 <template>
-  <v-col cols="12">
-    <!-- Botón para añadir un nuevo paciente -->
-    <v-row>
-      <v-btn block color="#123CCC" @click="showDialog = true">
-        <span style="text-transform: none; color: white">
-          Paciente Nuevo
-        </span>
-      </v-btn>
-    </v-row>
-
-    <!-- Tabla de datos de los pacientes -->
-    <v-row>
-      <v-data-table
-        :headers="headers"
-        :items="pacientes"
-      >
-        <template #[`item.acciones`]="{ item }">
-          <v-row>
-            <v-col cols="6">
-              <v-btn icon color="red" @click="prepareToDelete(item)">
+  <v-row>
+    <v-col cols="12" md="8">
+      <v-row>
+        <!-- Muestra las tarjetas de pacientes -->
+        <v-col v-for="paciente in pacientes" :key="paciente.id" cols="12" sm="6" md="4">
+          <v-card class="pa-3 mb-2">
+            <v-card-title>{{ paciente.nombre }} {{ paciente.apaterno }}</v-card-title>
+            <v-card-text>
+              {{ paciente.fechaNacimiento }}<br>
+              {{ paciente.telefono }}
+            </v-card-text>
+            <v-card-actions>
+              <v-btn icon color="red" @click="deletePatient(paciente)">
                 <v-icon>mdi-trash-can</v-icon>
               </v-btn>
-            </v-col>
-            <v-col cols="6">
-              <v-btn icon color="warning" @click="updatePatient(item)">
+              <v-btn icon color="warning" @click="updatePatient(paciente)">
                 <v-icon>mdi-account-edit</v-icon>
               </v-btn>
-            </v-col>
-          </v-row>
-        </template>
-      </v-data-table>
-    </v-row>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-col>
 
-    <!-- Diálogo para agregar nuevo paciente -->
-    <v-dialog v-model="showDialog" persistent width="500" transition="dialog-bottom-transition">
-      <v-card>
+    <v-col cols="12" md="4">
+      <v-card class="pa-3 my-card">
         <v-card-title>Agregar Paciente</v-card-title>
         <v-card-text>
-          <v-row v-row width="100%">
+          <v-form>
             <v-text-field
               v-model="nombre"
               label="Nombre"
               placeholder="Escribe el nombre"
               outlined
+              dense
+              solo
             />
-          </v-row><v-row width="100%">
             <v-text-field
               v-model="apaterno"
               label="Apellido paterno"
               placeholder="Escribe el apellido paterno"
               outlined
+              dense
+              solo
             />
-          </v-row>
-          <v-row width="100%">
             <v-text-field
               v-model="amaterno"
               label="Apellido materno"
               placeholder="Escribe el apellido materno"
               outlined
+              dense
+              solo
             />
-          </v-row>
-          <v-row width="100%">
             <v-text-field
               v-model="fechaNacimiento"
               label="Fecha de Nacimiento"
               placeholder="Escribe la fecha de nacimiento"
               outlined
+              dense
+              solo
             />
-          </v-row>
-          <v-row width="100%">
             <v-text-field
               v-model="telefono"
               label="Teléfono"
               placeholder="Escribe el teléfono"
               outlined
+              dense
+              solo
             />
-          </v-row>
-          <v-row width="100%">
             <v-text-field
               v-model="historialMedico"
               label="Historial Médico"
               placeholder="Describe el historial médico"
               outlined
+              dense
+              solo
               multiline
             />
-          </v-row>
+          </v-form>
         </v-card-text>
-        <v-card-actions>
-          <v-col cols="6">
-            <v-btn block color="green" @click="registrarPaciente">
-              <span style="text-transform: none; color: white;">Registrar</span>
-            </v-btn>
-          </v-col>
-          <v-col cols="6">
-            <v-btn block color="red" @click="showDialog = false">
-              <span style="text-transform: none; color: white;">Cancelar</span>
-            </v-btn>
-          </v-col>
+        <v-card-actions class="pt-0">
+          <v-btn color="green" block @click="registrarPaciente">
+            Registrar
+          </v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog>
-
-    <!-- Diálogo para actualizar paciente -->
-    <v-dialog v-model="showUpdate" persistent width="500" transition="dialog-bottom-transition">
-      <v-card>
-        <v-card-title>Actualizar Paciente</v-card-title>
-        <v-card-text>
-          <v-row>
-            <v-text-field v-model="patientToUpdate.nombre" label="Nombre" placeholder="Escribe el nombre" outlined />
-          </v-row>
-          <v-row>
-            <v-text-field v-model="patientToUpdate.apaterno" label="Apellido Paterno" placeholder="Escribe el apellido paterno" outlined />
-          </v-row>
-          <v-row>
-            <v-text-field v-model="patientToUpdate.amaterno" label="Apellido Materno" placeholder="Escribe el apellido materno" outlined />
-          </v-row>
-          <v-row>
-            <v-text-field v-model="patientToUpdate.fechaNacimiento" label="Fecha de Nacimiento" placeholder="Escribe la fecha de nacimiento" outlined />
-          </v-row>
-          <v-row>
-            <v-text-field v-model="patientToUpdate.telefono" label="Teléfono" placeholder="Escribe el teléfono" outlined />
-          </v-row>
-          <v-row>
-            <v-text-field v-model="patientToUpdate.historialMedico" label="Historial Médico" placeholder="Describe el historial médico" outlined multiline />
-          </v-row>
-        </v-card-text>
-        <v-card-actions>
-          <v-col cols="6">
-            <v-btn block color="green" @click="actualizarPaciente">
-              <span style="text-transform: none; color: white;">Actualizar</span>
-            </v-btn>
-          </v-col>
-          <v-col cols="6">
-            <v-btn block color="red" @click="showUpdate = false">
-              <span style="text-transform: none; color: white;">Cancelar</span>
-            </v-btn>
-          </v-col>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <!-- Diálogo para confirmación de eliminación -->
-    <v-dialog v-model="showDelete" width="300" persistent>
-      <v-card>
-        <v-card-title>Eliminar Paciente</v-card-title>
-        <v-card-text>¿Estás seguro?</v-card-text>
-        <v-card-actions>
-          <v-col cols="6">
-            <v-btn block color="green" @click="deletePatient">
-              <span style="text-transform: none; color: white;">Borrar</span>
-            </v-btn>
-          </v-col>
-          <v-col cols="6">
-            <v-btn block color="red" @click="showDelete = false">
-              <span style="text-transform: none; color: white;">Cancelar</span>
-            </v-btn>
-          </v-col>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-col>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
@@ -263,6 +190,7 @@ export default {
           if (res.data.message === 'Patient registered successfully') {
             this.showDialog = false
             this.obtenerPacientes()
+            this.clearForm()
           }
         })
         .catch((error) => {
@@ -270,6 +198,17 @@ export default {
           console.error('Error al registrar paciente:', error)
         })
     },
+
+    clearForm () {
+      // Limpia todos los campos del formulario después del registro
+      this.nombre = null
+      this.apaterno = null
+      this.amaterno = null
+      this.fechaNacimiento = null
+      this.telefono = null
+      this.historialMedico = null
+    },
+
     borrarPaciente () {
       const url = `/patients/${this.patientToDelete.id}`
       this.$axios.delete(url)
@@ -288,18 +227,13 @@ export default {
       this.patientToDelete = patient
       this.showDelete = true
     },
-    deletePatient () {
-      if (!this.patientToDelete) { return }
-      const url = `/patients/${this.patientToDelete.id}`
-      this.$axios.delete(url)
-        .then(() => {
-          this.showDelete = false
-          this.obtenerPacientes() // Refrescar la lista después de eliminar
-        })
-        .catch((error) => {
-          // eslint-disable-next-line no-console
-          console.error('Error al eliminar paciente:', error)
-        })
+    deletePatient (patient) {
+      const url = `/patients/${patient.id}`
+      this.$axios.delete(url).then(() => {
+        this.obtenerPacientes() // Refrescar la lista después de eliminar
+      }).catch((error) => {
+        console.error('Error al eliminar paciente:', error)
+      })
     },
     updatePatient (patient) {
       this.patientToUpdate = patient
@@ -322,3 +256,17 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.my-card {
+  max-height: 550px; /* Ajusta la altura máxima del formulario */
+  overflow: hidden/* Permite desplazarse si el contenido es muy largo */
+}
+.v-text-field--solo .v-input__control .v-input__slot {
+  height: 32px; /* Reduce la altura de los campos de texto */
+}
+
+.v-card-actions {
+  padding-top: 0; /* Elimina el espacio por encima del botón */
+}
+</style>

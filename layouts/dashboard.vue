@@ -148,8 +148,4 @@ export default {
   height: 100vh;
 }
 
-.v-navigation-drawer__content {
-    height: 100%;
-    overflow: hidden;
-}
 </style>

@@ -6,11 +6,14 @@
           <!-- Muestra las tarjetas de pacientes -->
           <v-col v-for="paciente in pacientes" :key="paciente.id" cols="12" sm="6" md="4">
             <v-card class="pa-3 mb-2 patient-card">
-              <v-card-title>{{ paciente.nombre }} {{ paciente.apaterno }}</v-card-title>
+              <v-card-title>{{ paciente.nombre }}</v-card-title>
               <v-card-text>
-                {{ paciente.fechaNacimiento }}<br>
-                {{ paciente.telefono }}
+                {{ paciente.email }}<br>
+                {{ paciente.telefono }}<br>
+                {{ paciente.direccion }}
+                {{ paciente.fecha }}<br>
               </v-card-text>
+
               <v-card-actions>
                 <v-btn icon color="red" @click="deletePatient(paciente)">
                   <v-icon>mdi-trash-can</v-icon>
@@ -38,25 +41,9 @@
                 solo
               />
               <v-text-field
-                v-model="apaterno"
-                label="Apellido paterno"
-                placeholder="Escribe el apellido paterno"
-                outlined
-                dense
-                solo
-              />
-              <v-text-field
-                v-model="amaterno"
-                label="Apellido materno"
-                placeholder="Escribe el apellido materno"
-                outlined
-                dense
-                solo
-              />
-              <v-text-field
-                v-model="fechaNacimiento"
-                label="Fecha de Nacimiento"
-                placeholder="Escribe la fecha de nacimiento"
+                v-model="email"
+                label="E-mail"
+                placeholder="Escribe el apellido e-mail"
                 outlined
                 dense
                 solo
@@ -70,13 +57,20 @@
                 solo
               />
               <v-text-field
-                v-model="historialMedico"
-                label="Historial Médico"
-                placeholder="Describe el historial médico"
+                v-model="direccion"
+                label="Direccion"
+                placeholder="Escribe la direccion"
                 outlined
                 dense
                 solo
-                multiline
+              />
+              <v-text-field
+                v-model="fecha"
+                label="Fecha"
+                placeholder="Escribe la fecha"
+                outlined
+                dense
+                solo
               />
             </v-form>
           </v-card-text>
@@ -107,20 +101,8 @@ export default {
           sortable: true
         },
         {
-          text: 'Apellido paterno',
-          value: 'apaterno',
-          align: 'center',
-          sortable: true
-        },
-        {
-          text: 'Apellido materno',
-          value: 'amaterno',
-          align: 'center',
-          sortable: true
-        },
-        {
-          text: 'Fecha de Nacimiento',
-          value: 'fechaNacimiento',
+          text: 'Email',
+          value: 'email',
           align: 'center',
           sortable: true
         },
@@ -131,10 +113,16 @@ export default {
           sortable: true
         },
         {
-          text: 'Historial Médico',
-          value: 'historialMedico',
+          text: 'Direccion',
+          value: 'direccion',
           align: 'center',
-          sortable: false
+          sortable: true
+        },
+        {
+          text: 'Fecha',
+          value: 'fecha',
+          align: 'center',
+          sortable: true
         },
         {
           text: 'Acciones',
@@ -145,11 +133,10 @@ export default {
       showDialog: false,
       showDelete: false,
       nombre: null,
-      apaterno: null,
-      amaterno: null,
-      fechaNacimiento: null,
+      email: null,
       telefono: null,
-      historialMedico: null,
+      direccion: null,
+      fecha: null,
       patientToDelete: null,
       patientToUpdate: {},
       showUpdate: false
@@ -181,11 +168,10 @@ export default {
       const url = '/register-patient'
       const data = {
         nombre: this.nombre,
-        apaterno: this.apaterno,
-        amaterno: this.amaterno,
-        fechaNacimiento: this.fechaNacimiento,
+        email: this.email,
         telefono: this.telefono,
-        historialMedico: this.historialMedico
+        direccion: this.direccion,
+        fecha: this.fecha
       }
       this.$axios.post(url, data)
         .then((res) => {
@@ -204,11 +190,10 @@ export default {
     clearForm () {
       // Limpia todos los campos del formulario después del registro
       this.nombre = null
-      this.apaterno = null
-      this.amaterno = null
-      this.fechaNacimiento = null
+      this.email = null
       this.telefono = null
-      this.historialMedico = null
+      this.direccion = null
+      this.fecha = null
     },
 
     borrarPaciente () {

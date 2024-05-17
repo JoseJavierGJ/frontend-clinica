@@ -44,8 +44,8 @@
       <v-sheet color="#ffdec8" class="pa-4 text-center rounded-lg">
         <v-img
           :src="require('@/assets/images/docat.jpg')"
-          height="60"
-          width="60"
+          height="55"
+          width="55"
           class="mb-2 mx-auto d-block rounded-circle"
           contain="true"
           aspect-ratio="1"
@@ -61,7 +61,7 @@
           color="#c8a2c8"
           class="dark--text rounded-pill"
           :class="{ 'white--text': hover }"
-          style="margin-top: 20px; position: relative; overflow: hidden;"
+          style="margin-top: 5px; position: relative; overflow: hidden;"
           @mouseover="hover = true"
           @mouseleave="hover = false"
           @click="logout"
@@ -80,7 +80,7 @@
 
     <v-main>
       <v-container
-        class="py-8 px-6"
+        class="py-8 px-6 cantainer"
         fluid
       >
         <Nuxt />
@@ -98,8 +98,9 @@ export default {
       userNombre: '',
       hover: false,
       links: [
+        { icon: 'mdi-view-dashboard', text: 'Dashboard', route: '/dashboard/prueba' },
         { icon: 'mdi-calendar', text: 'Schedule', route: '/dashboard/schedule' },
-        { icon: 'mdi-account', text: 'Patients', route: '/dashboard/usuarios' },
+        { icon: 'mdi-account', text: 'Patients', route: '/dashboard/patient' },
         { icon: 'mdi-cart', text: 'Orders', route: '/dashboard/orders' }
       ]
     }
@@ -150,6 +151,9 @@ export default {
 }
 .v-navigation-drawer__content {
   overflow: hidden;
+}
 
+.cantainer{
+  background-color: #fff4ec;
 }
 </style>

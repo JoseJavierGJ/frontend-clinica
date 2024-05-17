@@ -56,11 +56,12 @@
         <div>
           {{ userNombre }}
         </div>
+
         <v-btn
           color="#c8a2c8"
           class="dark--text rounded-pill"
           :class="{ 'white--text': hover }"
-          style="margin-top: 40px; position: relative; overflow: hidden;"
+          style="margin-top: 20px; position: relative; overflow: hidden;"
           @mouseover="hover = true"
           @mouseleave="hover = false"
           @click="logout"
@@ -105,15 +106,15 @@ export default {
   },
   mounted () {
     this.fetchUserEmail()
-    this.fetchUserNombre()
+    this.fetchUserName()
   },
   methods: {
     fetchUserEmail () {
       const email = localStorage.getItem('userEmail')
       this.userEmail = email || 'No disponible'
     },
-    fetchUserNombre () {
-      const nombre = localStorage.getItem('userNombre')
+    fetchUserName () {
+      const nombre = localStorage.getItem('userName')
       this.userNombre = nombre || 'No disponible'
     },
     logout () {
@@ -145,7 +146,10 @@ export default {
 
 .v-main {
   overflow: hidden;
-  height: 100vh;
+  /* height: 100vh; */
 }
+.v-navigation-drawer__content {
+  overflow: hidden;
 
+}
 </style>

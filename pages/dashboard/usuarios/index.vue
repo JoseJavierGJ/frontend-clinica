@@ -1,92 +1,94 @@
 <template>
-  <v-row>
-    <v-col cols="12" md="8">
-      <v-row>
-        <!-- Muestra las tarjetas de pacientes -->
-        <v-col v-for="paciente in pacientes" :key="paciente.id" cols="12" sm="6" md="4">
-          <v-card class="pa-3 mb-2">
-            <v-card-title>{{ paciente.nombre }} {{ paciente.apaterno }}</v-card-title>
-            <v-card-text>
-              {{ paciente.fechaNacimiento }}<br>
-              {{ paciente.telefono }}
-            </v-card-text>
-            <v-card-actions>
-              <v-btn icon color="red" @click="deletePatient(paciente)">
-                <v-icon>mdi-trash-can</v-icon>
-              </v-btn>
-              <v-btn icon color="warning" @click="updatePatient(paciente)">
-                <v-icon>mdi-account-edit</v-icon>
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-col>
+  <div class="main-content">
+    <v-row>
+      <v-col cols="12" md="8">
+        <v-row>
+          <!-- Muestra las tarjetas de pacientes -->
+          <v-col v-for="paciente in pacientes" :key="paciente.id" cols="12" sm="6" md="4">
+            <v-card class="pa-3 mb-2 patient-card">
+              <v-card-title>{{ paciente.nombre }} {{ paciente.apaterno }}</v-card-title>
+              <v-card-text>
+                {{ paciente.fechaNacimiento }}<br>
+                {{ paciente.telefono }}
+              </v-card-text>
+              <v-card-actions>
+                <v-btn icon color="red" @click="deletePatient(paciente)">
+                  <v-icon>mdi-trash-can</v-icon>
+                </v-btn>
+                <v-btn icon color="warning" @click="updatePatient(paciente)">
+                  <v-icon>mdi-account-edit</v-icon>
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-col>
 
-    <v-col cols="12" md="4">
-      <v-card class="pa-3 my-card">
-        <v-card-title>Agregar Paciente</v-card-title>
-        <v-card-text>
-          <v-form>
-            <v-text-field
-              v-model="nombre"
-              label="Nombre"
-              placeholder="Escribe el nombre"
-              outlined
-              dense
-              solo
-            />
-            <v-text-field
-              v-model="apaterno"
-              label="Apellido paterno"
-              placeholder="Escribe el apellido paterno"
-              outlined
-              dense
-              solo
-            />
-            <v-text-field
-              v-model="amaterno"
-              label="Apellido materno"
-              placeholder="Escribe el apellido materno"
-              outlined
-              dense
-              solo
-            />
-            <v-text-field
-              v-model="fechaNacimiento"
-              label="Fecha de Nacimiento"
-              placeholder="Escribe la fecha de nacimiento"
-              outlined
-              dense
-              solo
-            />
-            <v-text-field
-              v-model="telefono"
-              label="Teléfono"
-              placeholder="Escribe el teléfono"
-              outlined
-              dense
-              solo
-            />
-            <v-text-field
-              v-model="historialMedico"
-              label="Historial Médico"
-              placeholder="Describe el historial médico"
-              outlined
-              dense
-              solo
-              multiline
-            />
-          </v-form>
-        </v-card-text>
-        <v-card-actions class="pt-0">
-          <v-btn color="green" block @click="registrarPaciente">
-            Registrar
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
+      <v-col cols="12" md="4">
+        <v-card class="pa-3 my-card">
+          <v-card-title>Agregar Paciente</v-card-title>
+          <v-card-text>
+            <v-form>
+              <v-text-field
+                v-model="nombre"
+                label="Nombre"
+                placeholder="Escribe el nombre"
+                outlined
+                dense
+                solo
+              />
+              <v-text-field
+                v-model="apaterno"
+                label="Apellido paterno"
+                placeholder="Escribe el apellido paterno"
+                outlined
+                dense
+                solo
+              />
+              <v-text-field
+                v-model="amaterno"
+                label="Apellido materno"
+                placeholder="Escribe el apellido materno"
+                outlined
+                dense
+                solo
+              />
+              <v-text-field
+                v-model="fechaNacimiento"
+                label="Fecha de Nacimiento"
+                placeholder="Escribe la fecha de nacimiento"
+                outlined
+                dense
+                solo
+              />
+              <v-text-field
+                v-model="telefono"
+                label="Teléfono"
+                placeholder="Escribe el teléfono"
+                outlined
+                dense
+                solo
+              />
+              <v-text-field
+                v-model="historialMedico"
+                label="Historial Médico"
+                placeholder="Describe el historial médico"
+                outlined
+                dense
+                solo
+                multiline
+              />
+            </v-form>
+          </v-card-text>
+          <v-card-actions class="pt-0">
+            <v-btn color="green" block @click="registrarPaciente">
+              Registrar
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-col>
+    </v-row>
+  </div>
 </template>
 
 <script>
@@ -232,6 +234,7 @@ export default {
       this.$axios.delete(url).then(() => {
         this.obtenerPacientes() // Refrescar la lista después de eliminar
       }).catch((error) => {
+        // eslint-disable-next-line no-console
         console.error('Error al eliminar paciente:', error)
       })
     },
@@ -269,4 +272,30 @@ export default {
 .v-card-actions {
   padding-top: 0; /* Elimina el espacio por encima del botón */
 }
+
+.patient-card {
+  height: 240px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.main-content {
+  margin: 0;
+  padding: 0;
+  background-color: #fff4ec;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.v-navigation-drawer__content {
+  overflow: hidden;
+}
+
+.v-application .py-8 {
+    padding-top: 32px !important;
+    padding-bottom: 32px !important;
+    background-color: #fff4ec!important;
+}
+
 </style>

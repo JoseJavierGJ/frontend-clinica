@@ -389,7 +389,9 @@ strong {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 16px;
+  margin: 0;
+  padding: 0;
+  /* padding: 8px 16px; */
 }
 
 .delete-btn {

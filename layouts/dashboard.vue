@@ -98,7 +98,7 @@ export default {
       userNombre: '',
       hover: false,
       links: [
-        { icon: 'mdi-view-dashboard', text: 'Dashboard', route: '/dashboard/prueba' },
+        { icon: 'mdi-view-dashboard', text: 'Dashboard', route: '/dashboard/home' },
         { icon: 'mdi-calendar', text: 'Schedule', route: '/dashboard/schedule' },
         { icon: 'mdi-account', text: 'Patients', route: '/dashboard/patient' },
         { icon: 'mdi-cart', text: 'Orders', route: '/dashboard/orders' }

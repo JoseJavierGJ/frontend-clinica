@@ -3,6 +3,7 @@
     <v-row align="center" class="mx-0">
       <v-col cols="10" sm="8" class="d-flex align-center">
         <v-text-field
+          v-model="searchQuery"
           class="flex-grow-1"
           placeholder="Search..."
           solo
@@ -28,19 +29,18 @@
         <v-col cols="12" md="8">
           <v-row>
             <!-- tarjetas de pacientes -->
-            <v-col v-for="paciente in pacientes" :key="paciente.id" cols="12">
+            <v-col v-for="paciente in filteredPacientes" :key="paciente.id" cols="12">
               <v-card class="pa-3 mb-2 patient-card">
                 <div class="card-header">
                   <v-card-title>{{ paciente.nombre }}</v-card-title>
-                  <v-btn icon color="red" class="delete-btn" @click="deletePatient(paciente)">
-                    <v-icon>mdi-trash-can</v-icon>
-                  </v-btn>
-                  <v-btn color="blue" @click="verDetallePaciente(paciente)">
-                    Ver Detalle
-                  </v-btn>
-                  <v-btn color="green" @click="gestionarMedicinas(paciente)">
-                    Gestionar Medicinas
-                  </v-btn>
+                  <div>
+                    <v-btn color="blue" @click="verDetallePaciente(paciente)">
+                      Ver Detalle
+                    </v-btn>
+                    <v-btn color="green" @click="gestionarMedicinas(paciente)">
+                      Ver Medicinas
+                    </v-btn>
+                  </div>
                 </div>
                 <v-card-text class="patient-card-content">
                   <v-img
@@ -56,6 +56,11 @@
                     <span><strong>Fecha:</strong> {{ paciente.fecha }}</span>
                   </div>
                 </v-card-text>
+                <v-card-actions>
+                  <v-btn icon color="red" class="delete-btn" @click="deletePatient(paciente)">
+                    <v-icon>mdi-trash-can</v-icon>
+                  </v-btn>
+                </v-card-actions>
               </v-card>
             </v-col>
           </v-row>
@@ -65,13 +70,14 @@
           <v-card class="pa-3 my-card form-card">
             <v-card-title>For a Appointment</v-card-title>
             <v-card-text>
-              <v-form>
+              <v-form ref="form">
                 <v-text-field
                   v-model="nombre"
                   label="Nombre"
                   placeholder="Escribe el nombre"
                   outlined
                   dense
+                  :rules="[v => !!v || 'Nombre es requerido']"
                   style="background-color: transparent !important; border-radius: 15px"
                 />
                 <v-row>
@@ -81,15 +87,18 @@
                       label="Edad"
                       outlined
                       dense
+                      :rules="[v => !!v || 'Edad es requerida', v => /^\d+$/.test(v) || 'Edad debe ser un número']"
                       style="background-color: transparent !important; border-radius: 15px"
                     />
                   </v-col>
                   <v-col cols="6">
-                    <v-text-field
+                    <v-select
                       v-model="sexo"
+                      :items="['Hombre', 'Mujer']"
                       label="Sexo"
                       outlined
                       dense
+                      :rules="[v => !!v || 'Sexo es requerido']"
                       style="background-color: transparent !important; border-radius: 15px"
                     />
                   </v-col>
@@ -101,6 +110,7 @@
                   placeholder="Escribe el apellido e-mail"
                   outlined
                   dense
+                  :rules="[v => !!v || 'E-mail es requerido', v => /.+@.+\..+/.test(v) || 'E-mail debe ser válido']"
                   style="background-color: transparent !important; border-radius: 15px"
                 />
                 <v-text-field
@@ -109,7 +119,9 @@
                   placeholder="Escribe el teléfono"
                   outlined
                   dense
+                  :rules="[v => !!v || 'Teléfono es requerido', v => /^\d{3}-\d{3}-\d{4}$/.test(v) || 'Teléfono debe ser válido (XXX-XXX-XXXX)']"
                   style="background-color: transparent !important; border-radius: 15px"
+                  @input="formatPhone"
                 />
                 <v-text-field
                   v-model="direccion"
@@ -117,6 +129,7 @@
                   placeholder="Escribe la direccion"
                   outlined
                   dense
+                  :rules="[v => !!v || 'Dirección es requerida']"
                   style="background-color: transparent !important; border-radius: 15px"
                 />
                 <v-menu
@@ -132,10 +145,11 @@
                   <template #activator="{ on, attrs }">
                     <v-text-field
                       v-model="fecha"
-                      label="Fecha de nacimiento"
+                      label="Fecha de cansulta"
                       prepend-icon="mdi-calendar"
                       readonly
                       v-bind="attrs"
+                      :rules="[v => !!v || 'Fecha es requerida']"
                       v-on="on"
                     />
                   </template>
@@ -170,6 +184,7 @@ export default {
   auth: true,
   data () {
     return {
+      searchQuery: '',
       pacientes: [],
       headers: [
         {
@@ -227,15 +242,23 @@ export default {
       telefono: null,
       direccion: null,
       fecha: null,
+      sexo: null,
+      edad: null,
       patientToDelete: null,
       patientToUpdate: {},
-      showUpdate: false
+      showUpdate: false,
+      menu: false
     }
   },
   computed: {
     ...mapState({
       token: state => state.token
-    })
+    }),
+    filteredPacientes () {
+      return this.pacientes.filter(paciente =>
+        paciente.nombre.toLowerCase().includes(this.searchQuery.toLowerCase())
+      )
+    }
   },
   mounted () {
     this.obtenerPacientes()
@@ -263,28 +286,30 @@ export default {
       this.$router.push('/dashboard/orders')
     },
     registrarPaciente () {
-      const url = '/register-patient'
-      const data = {
-        nombre: this.nombre,
-        edad: this.edad,
-        sexo: this.sexo,
-        email: this.email,
-        telefono: this.telefono,
-        direccion: this.direccion,
-        fecha: this.fecha
+      if (this.$refs.form.validate()) {
+        const url = '/register-patient'
+        const data = {
+          nombre: this.nombre,
+          edad: this.edad,
+          sexo: this.sexo,
+          email: this.email,
+          telefono: this.telefono,
+          direccion: this.direccion,
+          fecha: this.fecha
+        }
+        this.$axios.post(url, data)
+          .then((res) => {
+            if (res.data.message === 'Patient registered successfully') {
+              this.showDialog = false
+              this.obtenerPacientes()
+              this.clearForm()
+            }
+          })
+          .catch((error) => {
+            // eslint-disable-next-line no-console
+            console.error('Error al registrar paciente:', error)
+          })
       }
-      this.$axios.post(url, data)
-        .then((res) => {
-          if (res.data.message === 'Patient registered successfully') {
-            this.showDialog = false
-            this.obtenerPacientes()
-            this.clearForm()
-          }
-        })
-        .catch((error) => {
-          // eslint-disable-next-line no-console
-          console.error('Error al registrar paciente:', error)
-        })
     },
 
     clearForm () {
@@ -338,6 +363,14 @@ export default {
           // eslint-disable-next-line no-console
           console.error('Error al actualizar paciente:', error)
         })
+    },
+    formatPhone () {
+      let numbers = this.telefono.replace(/\D/g, '')
+      if (numbers.length > 10) {
+        numbers = numbers.slice(0, 10)
+      }
+      const char = { 3: '-', 6: '-' }
+      this.telefono = numbers.split('').map((num, idx) => char[idx] ? char[idx] + num : num).join('')
     }
   }
 }
@@ -356,6 +389,9 @@ export default {
 
 .v-card-actions {
   padding-top: 0;
+  justify-content: flex-end;
+  position: relative;
+  margin-top: auto;
 }
 
 .v-card-text div {
@@ -388,8 +424,8 @@ strong {
 }
 
 .patient-image {
-  width: 80px;
-  height: 160px;
+  max-width: 140px;
+  max-height: 280px;
   border-radius: 50%;
   object-fit: cover;
   margin-right: 20px;
@@ -405,12 +441,19 @@ strong {
   align-items: center;
   margin: 0;
   padding: 0;
-  /* padding: 8px 16px; */
+}
+
+.v-card-actions {
+  justify-content: flex-end;
+  position: relative;
+  margin-top: auto;
 }
 
 .delete-btn {
-  margin-top: -12px;
-  margin-right: -12px;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  margin: 12px;
 }
 
 .main-content {
@@ -440,5 +483,4 @@ strong {
 .my-1 {
   margin-left: auto;
 }
-
 </style>

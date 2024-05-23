@@ -159,7 +159,7 @@ export default {
         if (result.message === 'success') {
           localStorage.setItem('userEmail', this.email)
           localStorage.setItem('userName', result.userNombre)
-          this.$router.push('/dashboard')
+          this.$router.push('/dashboard/home')
         }
       }).catch((err) => {
         // eslint-disable-next-line no-console

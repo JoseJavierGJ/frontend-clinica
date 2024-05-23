@@ -35,6 +35,12 @@
                   <v-btn icon color="red" class="delete-btn" @click="deletePatient(paciente)">
                     <v-icon>mdi-trash-can</v-icon>
                   </v-btn>
+                  <v-btn color="blue" @click="verDetallePaciente(paciente)">
+                    Ver Detalle
+                  </v-btn>
+                  <v-btn color="green" @click="gestionarMedicinas(paciente)">
+                    Gestionar Medicinas
+                  </v-btn>
                 </div>
                 <v-card-text class="patient-card-content">
                   <v-img
@@ -247,6 +253,14 @@ export default {
           // eslint-disable-next-line no-console
           console.error('Error al obtener pacientes:', error)
         })
+    },
+    verDetallePaciente (paciente) {
+      localStorage.setItem('pacienteSeleccionado', JSON.stringify(paciente))
+      this.$router.push('/dashboard/patient')
+    },
+    gestionarMedicinas (paciente) {
+      localStorage.setItem('pacienteSeleccionado', JSON.stringify(paciente))
+      this.$router.push('/dashboard/orders')
     },
     registrarPaciente () {
       const url = '/register-patient'

@@ -51,16 +51,6 @@
               </v-list-item-content>
             </v-list-item>
           </v-list>
-          <!-- <v-card-actions class="justify-space-between">
-            <v-btn icon color="red">
-              <v-icon>mdi-close-circle</v-icon>
-              Cancel Booking
-            </v-btn>
-            <v-btn icon color="blue">
-              <v-icon>mdi-calendar-clock</v-icon>
-              Reschedule
-            </v-btn>
-          </v-card-actions> -->
         </v-card>
       </v-col>
       <v-col cols="12" md="8">
@@ -101,20 +91,19 @@
           </v-card-title>
           <v-list color="#ffc198">
             <v-list-item-group>
-              <v-list-item v-for="medication in medications" :key="medication.id">
+              <v-list-item v-for="medication in medications" :key="medication.nombre">
                 <v-list-item-content class="d-flex justify-space-between align-center">
                   <div>
                     <div class="text-h6 font-weight-bold">
-                      {{ medication.name }} <span class="caption">({{ medication.dose }})</span>
+                      {{ medication.nombre }}
                     </div>
                     <div class="subtitle-1">
-                      {{ medication.instructions }}
+                      Cada {{ medication.duracion }}
                     </div>
                     <div class="caption text-primary">
-                      {{ medication.lastRefill }}
+                      Por {{ medication.dias }} días
                     </div>
                   </div>
-                  <!-- <v-icon>mdi-dots-vertical</v-icon> -->
                 </v-list-item-content>
               </v-list-item>
             </v-list-item-group>
@@ -128,27 +117,20 @@
           <v-card-title class="text-h5 font-weight-bold mb-4">
             Current Condition Of Patients
           </v-card-title>
-          <v-chip class="mb-4" color="orange darken-2" text-color="white">
-            Moderate
-          </v-chip>
           <div class="text-h5 font-weight-bold mb-2">
-            Sinusitis
+            {{ enfermedadPaciente.enfermedad }}
           </div>
           <div class="subtitle-1 mb-4">
-            A Condition In Which The Cavities Around The Nasal Passages Become Inflamed
+            {{ enfermedadPaciente.descripcionEnfermedad }}
           </div>
           <v-row>
             <v-col>
               <div class="subtitle-2 font-weight-bold">
-                Primary Doctor
-              </div>
-              <div>Dr. Jenni</div>
-            </v-col>
-            <v-col>
-              <div class="subtitle-2 font-weight-bold">
                 Treatment
               </div>
-              <div>Nasonex Aerosol<br>Mometasone Furate 50mcg/Spray</div>
+              <div v-for="medication in medications" :key="medication.nombre">
+                {{ medication.nombre }}
+              </div>
             </v-col>
           </v-row>
         </v-card>
@@ -165,7 +147,7 @@
               Your Payment
             </div>
             <div class="text-h4 font-weight-bold">
-              $110.00
+              ${{ totalAmount }}
             </div>
           </div>
           <v-row class="subtitle-1 my-4">
@@ -178,7 +160,7 @@
             <v-col>
               <div>Total</div>
               <div class="font-weight-bold">
-                $234.00
+                ${{ totalWithMedicare }}
               </div>
             </v-col>
           </v-row>
@@ -188,7 +170,7 @@
           <div class="caption mb-4">
             Suite 206/203-233 New King James Rd, Edgecliff NSW 2027
           </div>
-          <v-btn text color="primary">
+          <v-btn text color="primary" @click="borrarDatosPaciente">
             Next Appointment
           </v-btn>
           <v-icon>mdi-dots-vertical</v-icon>
@@ -200,7 +182,7 @@
 
 <script>
 export default {
-  name: 'CombinedComponent',
+  name: 'Home',
   layout: 'dashboard',
   auth: true,
   data () {
@@ -231,11 +213,57 @@ export default {
           description: 'Dr Kalish Has Updated The Prescription Of Alfousin From 8mg To 10mg'
         }
       ],
-      medications: [
-        { id: 1, name: 'Fenofibrate', dose: '48mg', instructions: 'Take With Food Every Morning', lastRefill: 'Last Refill 21/01/2023' },
-        { id: 2, name: 'Alfuzosin', dose: '10mg', instructions: 'Take 1 With Food Twice A Day And Avoid Drinking Alcohol For 2 Hours After', lastRefill: 'Last Refill 27/01/2023' },
-        { id: 3, name: 'Dexamethasone', dose: '4mg', instructions: 'Take 3 Tablets 3 Times A Day For 7 Days', lastRefill: 'Last Refill 24/01/2023' }
-      ]
+      medications: [],
+      totalAmount: 0,
+      medicareAmount: 125.00,
+      enfermedadPaciente: {}
+    }
+  },
+  computed: {
+    totalWithMedicare () {
+      return (parseFloat(this.totalAmount) + this.medicareAmount).toFixed(2)
+    }
+  },
+  mounted () {
+    const total = localStorage.getItem('total') || 0
+    this.totalAmount = parseFloat(total).toFixed(2)
+
+    const medicamentosEnviados = localStorage.getItem('medicamentosEnviados')
+    if (medicamentosEnviados) {
+      this.medications = JSON.parse(medicamentosEnviados)
+    }
+
+    const enfermedadData = localStorage.getItem('enfermedadPaciente')
+    if (enfermedadData) {
+      this.enfermedadPaciente = JSON.parse(enfermedadData)
+    }
+  },
+  methods: {
+    borrarDatosPaciente () {
+      const pacienteSeleccionado = JSON.parse(localStorage.getItem('pacienteSeleccionado'))
+      const pacientes = JSON.parse(localStorage.getItem('pacientes')) || []
+
+      // Eliminar paciente de la lista
+      const pacientesActualizados = pacientes.filter(p => p.id !== pacienteSeleccionado.id)
+      localStorage.setItem('pacientes', JSON.stringify(pacientesActualizados))
+
+      localStorage.removeItem('pacienteSeleccionado')
+      localStorage.removeItem('medicamentosEnviados')
+      localStorage.removeItem('total')
+      localStorage.removeItem('carrito')
+      localStorage.removeItem('enfermedadPaciente')
+      this.medications = []
+      this.enfermedadPaciente = {}
+      this.totalAmount = 0
+
+      // Notificar al backend para que borre el paciente de la base de datos
+      this.$axios.delete(`/patients/${pacienteSeleccionado.id}`).then(() => {
+        // eslint-disable-next-line no-console
+        console.log('Paciente eliminado del backend')
+      }).catch((error) => {
+        // eslint-disable-next-line no-console
+        console.error('Error al eliminar paciente del backend:', error)
+      })
     }
   }
 }

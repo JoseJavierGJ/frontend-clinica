@@ -3,19 +3,27 @@
     <!-- Campo de búsqueda para las medicinas -->
     <v-container class="mb-4">
       <v-row>
-        <v-col cols="12">
+        <v-col cols="12" class="d-flex align-center">
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
             label="Buscar medicina"
             single-line
             hide-details
-            append-outer-icon="mdi-cart"
-            @click:append-outer="showDialog = true"
+            class="flex-grow-1"
           />
+          <v-btn icon @click="showCartDialog = true">
+            <v-icon :class="{ 'cart-full': cartFull }">
+              {{ cartFull ? 'mdi-cart' : 'mdi-cart-outline' }}
+            </v-icon>
+          </v-btn>
+          <v-btn icon @click="showAddMedicineDialog = true">
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
         </v-col>
       </v-row>
     </v-container>
+
     <!-- Contenedor para las cards de los medicamentos -->
     <v-container>
       <v-row>
@@ -34,13 +42,18 @@
               <br>
               Cantidad: {{ medicina.cantidad }}
             </v-card-text>
-            <v-card-actions class="justify-end">
-              <v-btn icon @click="decrementarCantidad(index)">
-                <v-icon>mdi-minus</v-icon>
+            <v-card-actions class="justify-space-between">
+              <v-btn icon @click="deleteMedicine(medicina.nombre)">
+                <v-icon>mdi-delete</v-icon>
               </v-btn>
-              <v-btn icon @click="incrementarCantidad(index)">
-                <v-icon>mdi-plus</v-icon>
-              </v-btn>
+              <div>
+                <v-btn icon @click="decrementarCantidad(index)">
+                  <v-icon>mdi-minus</v-icon>
+                </v-btn>
+                <v-btn icon @click="incrementarCantidad(index)">
+                  <v-icon>mdi-plus</v-icon>
+                </v-btn>
+              </div>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -48,7 +61,7 @@
     </v-container>
 
     <!-- Diálogo para el carrito de compras -->
-    <v-dialog v-model="showDialog" max-width="500px">
+    <v-dialog v-model="showCartDialog" max-width="500px">
       <v-card>
         <v-card-title>Carrito de compras</v-card-title>
         <v-card-text>
@@ -64,11 +77,56 @@
           </div>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="red" text @click="showDialog = false">
+          <v-btn color="red" text @click="showCartDialog = false">
             Cerrar
           </v-btn>
           <v-btn color="blue" text @click="enviarTotal">
             Enviar
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Diálogo para agregar medicamentos -->
+    <v-dialog v-model="showAddMedicineDialog" max-width="500px">
+      <v-card>
+        <v-card-title>Agregar Medicamento</v-card-title>
+        <v-card-text>
+          <v-form ref="form" v-model="valid">
+            <v-text-field
+              v-model="newMedicine.nombre"
+              label="Nombre"
+              :rules="[v => !!v || 'Nombre es requerido']"
+              required
+            />
+            <v-textarea
+              v-model="newMedicine.descripcion"
+              label="Descripción"
+              :rules="[v => !!v || 'Descripción es requerida']"
+              required
+            />
+            <v-text-field
+              v-model="newMedicine.precio"
+              label="Precio"
+              type="number"
+              :rules="[v => !!v || 'Precio es requerido', v => v > 0 || 'El precio debe ser mayor que 0']"
+              required
+            />
+            <v-text-field
+              v-model="newMedicine.duracion"
+              label="Duración (horas)"
+              type="number"
+              :rules="[v => !!v || 'Duración es requerida', v => v > 0 || 'La duración debe ser mayor que 0']"
+              required
+            />
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="red" text @click="showAddMedicineDialog = false">
+            Cancelar
+          </v-btn>
+          <v-btn color="blue" text :disabled="!valid" @click="addMedicine">
+            Agregar
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -85,10 +143,19 @@ export default {
   data () {
     return {
       medicinas: [],
-      search: '', // Modelo para el campo de búsqueda
+      search: '',
       headers: [],
-      showDialog: false, // Controlar la visibilidad del diálogo
-      carrito: []
+      showCartDialog: false,
+      showAddMedicineDialog: false,
+      carrito: [],
+      newMedicine: {
+        nombre: '',
+        descripcion: '',
+        precio: '',
+        duracion: ''
+      },
+      valid: false,
+      cartFull: false
     }
   },
   computed: {
@@ -140,6 +207,8 @@ export default {
       } else {
         this.carrito.push({ ...medicina })
       }
+      this.cartFull = this.carrito.length > 0
+      this.animateCart()
     },
     enviarTotal () {
       const pacienteSeleccionado = JSON.parse(localStorage.getItem('pacienteSeleccionado'))
@@ -148,6 +217,41 @@ export default {
       localStorage.setItem('medicamentosPorPaciente', JSON.stringify(medicamentosPorPaciente))
       localStorage.setItem('total', this.totalCarrito)
       this.$router.push('/dashboard/patient')
+    },
+    addMedicine () {
+      const url = '/medicines'
+      this.$axios.post(url, this.newMedicine, {
+        headers: {
+          Authorization: `Bearer ${this.token}`
+        }
+      }).then(() => {
+        this.obtenerMedicina()
+        this.showAddMedicineDialog = false
+        this.$refs.form.reset()
+      }).catch((error) => {
+        // eslint-disable-next-line no-console
+        console.error('Error al agregar medicina:', error)
+      })
+    },
+    deleteMedicine (nombre) {
+      const url = `/medicines/${nombre}`
+      this.$axios.delete(url, {
+        headers: {
+          Authorization: `Bearer ${this.token}`
+        }
+      }).then(() => {
+        this.obtenerMedicina()
+      }).catch((error) => {
+        // eslint-disable-next-line no-console
+        console.error('Error al eliminar medicina:', error)
+      })
+    },
+    animateCart () {
+      const cartIcon = this.$el.querySelector('.mdi-cart, .mdi-cart-outline')
+      cartIcon.classList.add('cart-animation')
+      setTimeout(() => {
+        cartIcon.classList.remove('cart-animation')
+      }, 500)
     }
   }
 }
@@ -161,5 +265,24 @@ export default {
   flex-direction: column;
   justify-content: space-between;
   border-radius: 15px;
+}
+
+.cart-animation {
+  animation: shake 0.5s;
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-5px);
+  }
 }
 </style>

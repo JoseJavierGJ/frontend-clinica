@@ -120,6 +120,11 @@ export default {
     },
     logout () {
       localStorage.removeItem('userEmail')
+      localStorage.removeItem('userName')
+      localStorage.removeItem('pacienteSeleccionado')
+      localStorage.removeItem('medicamentosPorPaciente')
+      localStorage.removeItem('enfermedadPaciente')
+      localStorage.removeItem('medicamentosEnviados')
       this.$router.push('/')
     }
   }

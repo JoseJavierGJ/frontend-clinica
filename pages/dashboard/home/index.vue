@@ -41,7 +41,7 @@
           <v-list>
             <v-list-item>
               <v-list-item-avatar>
-                <v-img src="https://placehold.co/60x60" alt="Doctor Image" />
+                <v-img :src="require('@/assets/images/docat.jpg')" alt="Doctor Image" />
               </v-list-item-avatar>
               <v-list-item-content>
                 <v-list-item-title class="font-weight-medium">
@@ -62,7 +62,7 @@
             <v-list-item-group>
               <v-list-item v-for="activity in activities" :key="activity.id">
                 <v-list-item-avatar>
-                  <v-img :src="activity.image" alt="Doctor Image" />
+                  <v-img :src="require(`@/assets/images/${activity.image}`)" alt="Doctor Image" />
                 </v-list-item-avatar>
                 <v-list-item-content>
                   <v-list-item-title class="font-weight-medium">
@@ -73,9 +73,6 @@
                 <v-list-item-action>
                   <v-chip :color="activity.statusColor" small />
                 </v-list-item-action>
-                <v-list-item-subtitle class="flex-grow-1">
-                  {{ activity.description }}
-                </v-list-item-subtitle>
               </v-list-item>
             </v-list-item-group>
           </v-list>
@@ -190,27 +187,24 @@ export default {
       activities: [
         {
           id: 1,
-          doctor: 'Dr. Paul MBBS,.MS.',
+          doctor: 'Dr. Daniel MBBS,.MS.',
           specialty: 'Orthopedists Specialist',
-          image: 'https://placehold.co/60x60',
-          statusColor: 'green',
-          description: 'Dr Ramadi Entersilikokaz Added Two New Conditons To Your Health Record On The 09 May Regarding Your Symptoms'
+          image: 'batcat.png',
+          statusColor: 'green'
         },
         {
           id: 2,
-          doctor: 'Dr. Jenni MBBS,.MS.',
+          doctor: 'Dra. Itzel MBBS,.MS.',
           specialty: 'Hearts Specialist',
-          image: 'https://placehold.co/60x60',
-          statusColor: 'red',
-          description: 'Medicare Has Sent A Benefit Of $132.44 For Item (Token Id65316152)'
+          image: 'docat.jpg',
+          statusColor: 'red'
         },
         {
           id: 3,
-          doctor: 'Dr. Micheal MBBS,.MS.',
+          doctor: 'Dra. Yoselin MBBS,.MS.',
           specialty: 'Lungs Specialist',
-          image: 'https://placehold.co/60x60',
-          statusColor: 'green',
-          description: 'Dr Kalish Has Updated The Prescription Of Alfousin From 8mg To 10mg'
+          image: 'docat.jpg',
+          statusColor: 'green'
         }
       ],
       medications: [],

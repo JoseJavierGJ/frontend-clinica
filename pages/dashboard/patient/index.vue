@@ -27,6 +27,7 @@
           v-model="enfermedadPaciente.descripcionEnfermedad"
           label="Descripción de la enfermedad"
           outlined
+          height="40px"
         />
       </v-card-text>
       <v-card-actions class="justify-end">
@@ -62,7 +63,10 @@
                 label=""
                 min="1"
                 outlined
+                dense
                 class="small-input"
+                :rules="[v => !!v || 'Días es requerido', v => /^\d+$/.test(v) || 'Días debe ser un número']"
+                style="width: 100px; margin-left: 8px;"
               />
             </div>
           </v-card-text>
@@ -152,7 +156,7 @@ export default {
 }
 
 .small-input .v-input__control {
-  width: 50px;
+  width: 100px;
   margin-left: 8px;
 }
 

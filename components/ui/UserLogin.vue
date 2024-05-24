@@ -10,11 +10,29 @@
     </v-card-title>
     <v-card-text>
       <v-row>
-        <v-text-field v-model="email" rounded label="E-Mail" outlined />
+        <v-text-field
+          v-model="email"
+          rounded
+          label="E-Mail"
+          outlined
+          :rules="[v => !!v || 'Email es requerido']"
+        />
       </v-row>
       <v-row>
-        <v-text-field v-model="password" rounded label="Password" outlined type="password" />
+        <v-text-field
+          v-model="password"
+          :type="showPassword ? 'text' : 'password'"
+          rounded
+          label="Password"
+          outlined
+          append-icon="mdi-eye"
+          :rules="[v => !!v || 'Contraseña es requerida']"
+          @click:append="togglePasswordVisibility"
+        />
       </v-row>
+      <v-alert v-if="errorMessage" type="error" dismissible @input="errorMessage = ''">
+        {{ errorMessage }}
+      </v-alert>
     </v-card-text>
     <v-card-actions>
       <v-col cols="12">
@@ -140,32 +158,44 @@ export default {
       apaterno: null,
       amaterno: null,
       especialidad: null,
-      telefono: null
+      telefono: null,
+      showPassword: false,
+      errorMessage: ''
     }
   },
   methods: {
+    togglePasswordVisibility () {
+      this.showPassword = !this.showPassword
+    },
     async login () {
-      // eslint-disable-next-line no-console
-      await console.log('@@@ datos => ', this.email, this.password)
+      this.errorMessage = ''
+      if (!this.email || !this.password) {
+        this.errorMessage = 'Por favor, ingrese el correo y la contraseña'
+        return
+      }
+
       const sendData = {
         email: this.email,
         password: this.password
       }
-      await this.$auth.loginWith('local', {
-        data: sendData
-      }).then(async (res) => {
-        // eslint-disable-next-line no-console
-        const result = await res.data
+      try {
+        const res = await this.$auth.loginWith('local', { data: sendData })
+        const result = res.data
         if (result.message === 'success') {
           localStorage.setItem('userEmail', this.email)
           localStorage.setItem('userName', result.userNombre)
           localStorage.setItem('userEspecialidad', result.userEspecialid)
           this.$router.push('/dashboard/home')
         }
-      }).catch((err) => {
-        // eslint-disable-next-line no-console
-        console.log('@@@ error => ', err)
-      })
+      } catch (err) {
+        if (err.response && err.response.status === 404) {
+          this.errorMessage = 'Correo no encontrado'
+        } else if (err.response && err.response.status === 401) {
+          this.errorMessage = 'Credenciales inválidas'
+        } else {
+          this.errorMessage = 'Error en el servidor. Por favor, inténtelo de nuevo más tarde.'
+        }
+      }
     },
     registrarUsuario () {
       const url = '/register'
@@ -180,8 +210,6 @@ export default {
       }
       this.$axios.post(url, data)
         .then((res) => {
-          // eslint-disable-next-line no-console
-          console.log('@@ res => ', res)
           if (res.data.message === 'User registered successfully') {
             this.showDialog = false
           }
@@ -196,6 +224,7 @@ export default {
 </script>
 
 <style scoped>
+
 .rowCard{
   width: 100%;
   display: flex;
@@ -221,4 +250,9 @@ html {
     /* height: 100%; */
     overflow: hidden;
 }
+
+.v-application .rounded {
+    border-radius: 30px !important;
+}
+
 </style>

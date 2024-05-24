@@ -7,7 +7,7 @@
         width="100vw"
         color="#FFDEC8"
       >
-        <v-row>
+        <v-row style="padding-top: 23px;">
           <v-col cols="6">
             <v-row height="300px" align="center" justify="center">
               <h1 style="padding-top: 50px;">

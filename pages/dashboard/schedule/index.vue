@@ -344,7 +344,8 @@ export default {
     deletePatient (patient) {
       const url = `/patients/${patient.id}`
       this.$axios.delete(url).then(() => {
-        this.obtenerPacientes() // Refrescar la lista después de eliminar
+        this.obtenerPacientes()
+        this.$emit('pacienteEliminado', patient.id)
       }).catch((error) => {
         // eslint-disable-next-line no-console
         console.error('Error al eliminar paciente:', error)

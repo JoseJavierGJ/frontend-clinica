@@ -302,10 +302,14 @@ export default {
       this.$axios.delete(`/patients/${pacienteSeleccionado.id}`).then(() => {
         // eslint-disable-next-line no-console
         console.log('Paciente eliminado del backend')
+        this.obtenerPacientes()
       }).catch((error) => {
         // eslint-disable-next-line no-console
         console.error('Error al eliminar paciente del backend:', error)
       })
+    },
+    actualizarPacientes (idEliminado) {
+      this.pacientes = this.pacientes.filter(paciente => paciente.id !== idEliminado)
     }
   }
 }

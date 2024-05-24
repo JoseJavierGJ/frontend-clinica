@@ -34,20 +34,32 @@
     <v-row class="gap-4 mt-4">
       <!-- Ajustamos las columnas aquí -->
       <v-col cols="12" md="4">
-        <v-card class="pa-6" color="#ffdec8" elevation="2" style="height: 408px;">
+        <v-card class="pa-6" color="#ffdec8" elevation="2" style="height: auto;">
           <v-card-title class="text-h5 font-weight-bold mb-4">
             Appointment
           </v-card-title>
-          <v-list>
+          <v-list color="#ffdec8">
             <v-list-item>
               <v-list-item-avatar>
                 <v-img :src="require('@/assets/images/docat.jpg')" alt="Doctor Image" />
               </v-list-item-avatar>
               <v-list-item-content>
                 <v-list-item-title class="font-weight-medium">
-                  Dr. Paul MBBS,.MS.
+                  Dr. {{ userNombre }} MBBS,.MS.
                 </v-list-item-title>
-                <v-list-item-subtitle>Orthopedists Specialist</v-list-item-subtitle>
+                <v-list-item-subtitle>{{ userEspecialidad }}</v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+            <v-divider />
+            <v-list-item
+              v-for="paciente in sortedPacientes"
+              :key="paciente.id"
+              class="patient-item"
+              @click="goToSchedule(paciente)"
+            >
+              <v-list-item-content>
+                <v-list-item-title>{{ paciente.nombre }}</v-list-item-title>
+                <v-list-item-subtitle>{{ paciente.fecha }}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
           </v-list>
@@ -210,15 +222,26 @@ export default {
       medications: [],
       totalAmount: 0,
       medicareAmount: 125.00,
-      enfermedadPaciente: {}
+      enfermedadPaciente: {},
+      pacientes: [], // Añadir esta línea
+      userEspecialidad: '',
+      userNombre: ''
     }
   },
   computed: {
     totalWithMedicare () {
       return (parseFloat(this.totalAmount) + this.medicareAmount).toFixed(2)
+    },
+    sortedPacientes () {
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+      return this.pacientes.sort((a, b) => new Date(a.fecha) - new Date(b.fecha))
     }
   },
   mounted () {
+    this.fetchUserEspecialidad()
+    this.fetchUserName()
+    this.obtenerPacientes()
+
     const total = localStorage.getItem('total') || 0
     this.totalAmount = parseFloat(total).toFixed(2)
 
@@ -233,6 +256,31 @@ export default {
     }
   },
   methods: {
+    fetchUserEspecialidad () {
+      const especialidad = localStorage.getItem('userEspecialidad')
+      this.userEspecialidad = especialidad || 'No disponible'
+    },
+    fetchUserName () {
+      const nombre = localStorage.getItem('userName')
+      this.userNombre = nombre || 'No disponible'
+    },
+    obtenerPacientes () {
+      const url = '/get-all-patients'
+      this.$axios.get(url)
+        .then((res) => {
+          if (res.data.message === 'success') {
+            this.pacientes = res.data.patients
+          }
+        })
+        .catch((error) => {
+          // eslint-disable-next-line no-console
+          console.error('Error al obtener pacientes:', error)
+        })
+    },
+    goToSchedule (paciente) {
+      localStorage.setItem('pacienteSeleccionado', JSON.stringify(paciente))
+      this.$router.push('/dashboard/schedule')
+    },
     borrarDatosPaciente () {
       const pacienteSeleccionado = JSON.parse(localStorage.getItem('pacienteSeleccionado'))
       const pacientes = JSON.parse(localStorage.getItem('pacientes')) || []
@@ -283,5 +331,9 @@ export default {
 
 .mr-4 {
   margin-right: 16px;
+}
+
+.patient-item {
+  cursor: pointer;
 }
 </style>

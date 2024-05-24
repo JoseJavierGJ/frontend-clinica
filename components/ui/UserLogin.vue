@@ -159,6 +159,7 @@ export default {
         if (result.message === 'success') {
           localStorage.setItem('userEmail', this.email)
           localStorage.setItem('userName', result.userNombre)
+          localStorage.setItem('userEspecialidad', result.userEspecialid)
           this.$router.push('/dashboard/home')
         }
       }).catch((err) => {

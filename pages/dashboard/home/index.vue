@@ -223,7 +223,7 @@ export default {
       totalAmount: 0,
       medicareAmount: 125.00,
       enfermedadPaciente: {},
-      pacientes: [], // Añadir esta línea
+      pacientes: [],
       userEspecialidad: '',
       userNombre: ''
     }

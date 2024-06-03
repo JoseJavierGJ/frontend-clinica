@@ -70,7 +70,7 @@
           <v-card class="pa-3 my-card form-card">
             <v-card-title>For a Appointment</v-card-title>
             <v-card-text>
-              <v-form ref="form">
+              <v-form ref="form" lazy-validation>
                 <v-text-field
                   v-model="nombre"
                   label="Nombre"
@@ -321,6 +321,9 @@ export default {
       this.telefono = null
       this.direccion = null
       this.fecha = null
+
+      // Reinicia la validación del formulario
+      this.$refs.form.resetValidation()
     },
 
     borrarPaciente () {

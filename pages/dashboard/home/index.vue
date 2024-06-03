@@ -206,14 +206,14 @@ export default {
         },
         {
           id: 2,
-          doctor: 'Dra. Itzel MBBS,.MS.',
+          doctor: 'Dr. Itzel MBBS,.MS.',
           specialty: 'Hearts Specialist',
           image: 'docat.jpg',
           statusColor: 'red'
         },
         {
           id: 3,
-          doctor: 'Dra. Yoselin MBBS,.MS.',
+          doctor: 'Dr. Yoselin MBBS,.MS.',
           specialty: 'Lungs Specialist',
           image: 'docat.jpg',
           statusColor: 'green'

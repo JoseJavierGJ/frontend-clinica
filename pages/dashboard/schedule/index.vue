@@ -56,7 +56,7 @@
                   </div>
                 </v-card-text>
                 <v-card-actions>
-                  <v-btn icon color="red" class="delete-btn" @click="deletePatient(paciente)">
+                  <v-btn icon color="red" class="delete-btn" @click="prepareToDelete(paciente)">
                     <v-icon>mdi-trash-can</v-icon>
                   </v-btn>
                 </v-card-actions>
@@ -152,7 +152,11 @@
                       v-on="on"
                     />
                   </template>
-                  <v-date-picker v-model="fecha" no-title scrollable>
+                  <v-date-picker
+                    v-model="fecha"
+                    no-title
+                    scrollable
+                  >
                     <v-spacer />
                     <v-btn text color="primary" @click="menu = false">
                       Cancel
@@ -173,6 +177,26 @@
         </v-col>
       </v-row>
     </div>
+
+    <!-- Dialog for deleting patient -->
+    <v-dialog v-model="showDelete" max-width="500px" persistent>
+      <v-card>
+        <v-card-title class="headline">
+          Confirm Delete
+        </v-card-title>
+        <v-card-text>
+          Are you sure you want to delete the patient "{{ patientToDelete?.nombre }}"?
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="red" text class="mr-auto" @click="showDelete = false">
+            Cancel
+          </v-btn>
+          <v-btn color="blue" text class="ml-auto" @click="borrarPaciente">
+            Delete
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -246,7 +270,8 @@ export default {
       patientToDelete: null,
       patientToUpdate: {},
       showUpdate: false,
-      menu: false
+      menu: false,
+      minDate: null // No hay fecha mínima ahora
     }
   },
   computed: {
@@ -261,6 +286,7 @@ export default {
   },
   mounted () {
     this.obtenerPacientes()
+    this.setMinDate()
   },
   methods: {
     obtenerPacientes () {
@@ -369,6 +395,10 @@ export default {
       }
       const char = { 3: '-', 6: '-' }
       this.telefono = numbers.split('').map((num, idx) => char[idx] ? char[idx] + num : num).join('')
+    },
+    setMinDate () {
+      const today = new Date()
+      this.minDate = today.toISOString().substr(0, 10)
     }
   }
 }

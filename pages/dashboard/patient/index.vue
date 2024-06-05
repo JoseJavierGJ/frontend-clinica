@@ -16,18 +16,22 @@
     <v-card v-if="!enfermedadEnviada" class="pa-3 mb-4 enfermedad-card">
       <v-card-title>Patient's Disease</v-card-title>
       <v-card-text>
-        <v-text-field
-          v-model="enfermedadPaciente.enfermedad"
-          label="Disease"
-          outlined
-          class="mb-4"
-        />
-        <v-textarea
-          v-model="enfermedadPaciente.descripcionEnfermedad"
-          label="Disease Description"
-          outlined
-          height="40px"
-        />
+        <v-form ref="enfermedadForm" v-model="valid" lazy-validation>
+          <v-text-field
+            v-model="enfermedadPaciente.enfermedad"
+            label="Disease"
+            outlined
+            class="mb-4"
+            :rules="[v => !!v || 'Disease is required']"
+          />
+          <v-textarea
+            v-model="enfermedadPaciente.descripcionEnfermedad"
+            label="Disease Description"
+            outlined
+            height="40px"
+            :rules="[v => !!v || 'Description is required']"
+          />
+        </v-form>
       </v-card-text>
       <v-card-actions class="justify-end">
         <v-btn color="blue" text @click="enviarEnfermedad">
@@ -56,17 +60,19 @@
             <strong>Hours:</strong> Every {{ medicina.duracion }} hours<br>
             <div class="d-flex align-center">
               <strong>Days:</strong>
-              <v-text-field
-                v-model="medicina.dias"
-                type="number"
-                label=""
-                min="1"
-                outlined
-                dense
-                class="small-input"
-                :rules="[v => !!v || 'Days are required', v => /^\d+$/.test(v) || 'Days must be a number']"
-                style="width: 100px; margin-left: 8px;"
-              />
+              <v-form ref="medicinaForm" v-model="valid" lazy-validation>
+                <v-text-field
+                  v-model="medicina.dias"
+                  type="number"
+                  label=""
+                  min="1"
+                  outlined
+                  dense
+                  class="small-input"
+                  :rules="[v => !!v || 'Days are required', v => /^\d+$/.test(v) || 'Days must be a number']"
+                  style="width: 100px; margin-left: 8px;"
+                />
+              </v-form>
             </div>
           </v-card-text>
           <v-card-actions class="justify-end">
@@ -94,7 +100,8 @@ export default {
         enfermedad: '',
         descripcionEnfermedad: ''
       },
-      enfermedadEnviada: false
+      enfermedadEnviada: false,
+      valid: false
     }
   },
   computed: {
@@ -134,8 +141,10 @@ export default {
       }
     },
     enviarEnfermedad () {
-      localStorage.setItem('enfermedadPaciente', JSON.stringify(this.enfermedadPaciente))
-      this.enfermedadEnviada = true
+      if (this.$refs.enfermedadForm.validate()) {
+        localStorage.setItem('enfermedadPaciente', JSON.stringify(this.enfermedadPaciente))
+        this.enfermedadEnviada = true
+      }
     }
   }
 }

@@ -125,6 +125,7 @@ export default {
       localStorage.removeItem('medicamentosPorPaciente')
       localStorage.removeItem('enfermedadPaciente')
       localStorage.removeItem('medicamentosEnviados')
+      localStorage.removeItem('total')
       this.$router.push('/')
     }
   }

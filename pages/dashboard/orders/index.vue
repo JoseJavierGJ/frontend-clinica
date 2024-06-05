@@ -7,7 +7,7 @@
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
-            label="Buscar medicina"
+            label="Search Medicine"
             single-line
             hide-details
             class="flex-grow-1"
@@ -38,14 +38,21 @@
             <v-card-title>{{ medicina.nombre }}</v-card-title>
             <v-card-subtitle>{{ medicina.descripcion }}</v-card-subtitle>
             <v-card-text>
-              Precio: ${{ medicina.precio }}
+              Price: ${{ medicina.precio }}
               <br>
-              Cantidad: {{ medicina.cantidad }}
+              Quantity: {{ medicina.cantidad }}
+              <br>
+              mg: {{ medicina.mg }}
             </v-card-text>
             <v-card-actions class="justify-space-between">
-              <v-btn icon @click="deleteMedicine(medicina.nombre)">
-                <v-icon>mdi-delete</v-icon>
-              </v-btn>
+              <div>
+                <v-btn icon @click="confirmDeleteMedicine(medicina)">
+                  <v-icon>mdi-delete</v-icon>
+                </v-btn>
+                <v-btn icon @click="openEditDialog(medicina)">
+                  <v-icon>mdi-pencil</v-icon>
+                </v-btn>
+              </div>
               <div>
                 <v-btn icon @click="decrementarCantidad(index)">
                   <v-icon>mdi-minus</v-icon>
@@ -60,10 +67,28 @@
       </v-row>
     </v-container>
 
+    <!-- Diálogo de confirmación de eliminación -->
+    <v-dialog v-model="showDeleteDialog" max-width="500px">
+      <v-card>
+        <v-card-title>Confirm Delete</v-card-title>
+        <v-card-text>
+          Are you sure you want to delete the medicine "{{ selectedMedicine.nombre }}"?
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="red" text @click="showDeleteDialog = false">
+            Cancel
+          </v-btn>
+          <v-btn color="blue" text @click="deleteMedicine">
+            Delete
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <!-- Diálogo para el carrito de compras -->
     <v-dialog v-model="showCartDialog" max-width="500px">
       <v-card>
-        <v-card-title>Carrito de compras</v-card-title>
+        <v-card-title>Medicine Order</v-card-title>
         <v-card-text>
           <v-list>
             <v-list-item v-for="item in carrito" :key="item.nombre">
@@ -78,10 +103,10 @@
         </v-card-text>
         <v-card-actions>
           <v-btn color="red" text @click="showCartDialog = false">
-            Cerrar
+            Close
           </v-btn>
           <v-btn color="blue" text @click="enviarTotal">
-            Enviar
+            Submit
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -90,43 +115,101 @@
     <!-- Diálogo para agregar medicamentos -->
     <v-dialog v-model="showAddMedicineDialog" max-width="500px">
       <v-card>
-        <v-card-title>Agregar Medicamento</v-card-title>
+        <v-card-title>Add Medicine</v-card-title>
         <v-card-text>
-          <v-form ref="form" v-model="valid">
+          <v-form ref="form" v-model="valid" lazy-validation>
             <v-text-field
               v-model="newMedicine.nombre"
-              label="Nombre"
-              :rules="[v => !!v || 'Nombre es requerido']"
+              label="Name"
+              :rules="[v => !!v || 'Name is required']"
               required
             />
             <v-textarea
               v-model="newMedicine.descripcion"
-              label="Descripción"
-              :rules="[v => !!v || 'Descripción es requerida']"
+              label="Description"
+              :rules="[v => !!v || 'Description is required']"
               required
             />
             <v-text-field
               v-model="newMedicine.precio"
-              label="Precio"
+              label="Price"
               type="number"
-              :rules="[v => !!v || 'Precio es requerido', v => v > 0 || 'El precio debe ser mayor que 0']"
+              :rules="[v => !!v || 'Price is required', v => v > 0 || 'Price must be greater than 0']"
               required
             />
             <v-text-field
               v-model="newMedicine.duracion"
-              label="Duración (horas)"
+              label="Duration (hours)"
               type="number"
-              :rules="[v => !!v || 'Duración es requerida', v => v > 0 || 'La duración debe ser mayor que 0']"
+              :rules="[v => !!v || 'Duration is required', v => v > 0 || 'Duration must be greater than 0']"
+              required
+            />
+            <v-text-field
+              v-model="newMedicine.mg"
+              label="mg"
+              type="number"
+              :rules="[v => !!v || 'mg is required', v => v > 0 || 'mg must be greater than 0']"
               required
             />
           </v-form>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="red" text @click="showAddMedicineDialog = false">
-            Cancelar
+          <v-btn color="red" text @click="cancelAddMedicine">
+            Cancel
           </v-btn>
           <v-btn color="blue" text :disabled="!valid" @click="addMedicine">
-            Agregar
+            Add
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Diálogo para editar medicamentos -->
+    <v-dialog v-model="showEditMedicineDialog" max-width="500px">
+      <v-card>
+        <v-card-title>Edit Medicine</v-card-title>
+        <v-card-text>
+          <v-form ref="editForm" v-model="valid" lazy-validation>
+            <v-text-field
+              v-model="editMedicine.nombre"
+              label="Name"
+              disabled
+            />
+            <v-textarea
+              v-model="editMedicine.descripcion"
+              label="Description"
+              :rules="[v => !!v || 'Description is required']"
+              required
+            />
+            <v-text-field
+              v-model="editMedicine.precio"
+              label="Price"
+              type="number"
+              :rules="[v => !!v || 'Price is required', v => v > 0 || 'Price must be greater than 0']"
+              required
+            />
+            <v-text-field
+              v-model="editMedicine.duracion"
+              label="Duration (hours)"
+              type="number"
+              :rules="[v => !!v || 'Duration is required', v => v > 0 || 'Duration must be greater than 0']"
+              required
+            />
+            <v-text-field
+              v-model="editMedicine.mg"
+              label="mg"
+              type="number"
+              :rules="[v => !!v || 'mg is required', v => v > 0 || 'mg must be greater than 0']"
+              required
+            />
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="red" text @click="cancelEditMedicine">
+            Cancel
+          </v-btn>
+          <v-btn color="blue" text :disabled="!valid" @click="updateMedicine">
+            Save
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -147,13 +230,24 @@ export default {
       headers: [],
       showCartDialog: false,
       showAddMedicineDialog: false,
+      showEditMedicineDialog: false,
+      showDeleteDialog: false,
       carrito: [],
       newMedicine: {
         nombre: '',
         descripcion: '',
         precio: '',
-        duracion: ''
+        duracion: '',
+        mg: ''
       },
+      editMedicine: {
+        nombre: '',
+        descripcion: '',
+        precio: '',
+        duracion: '',
+        mg: ''
+      },
+      selectedMedicine: {},
       valid: false,
       cartFull: false
     }
@@ -186,7 +280,7 @@ export default {
       }).then((res) => {
         this.medicinas = res.data.medicines.map(m => ({ ...m, cantidad: 0 }))
       }).catch((error) => {
-        // eslint-disable-next-line no-console
+      // eslint-disable-next-line no-console
         console.error('Error al obtener medicinas:', error)
       })
     },
@@ -213,7 +307,14 @@ export default {
     enviarTotal () {
       const pacienteSeleccionado = JSON.parse(localStorage.getItem('pacienteSeleccionado'))
       const medicamentosPorPaciente = JSON.parse(localStorage.getItem('medicamentosPorPaciente')) || {}
-      medicamentosPorPaciente[pacienteSeleccionado.id] = this.carrito
+
+      // Añade mg al nombre de la medicina
+      const carritoConMg = this.carrito.map(medicina => ({
+        ...medicina,
+        nombre: `${medicina.nombre} (${medicina.mg} mg)`
+      }))
+
+      medicamentosPorPaciente[pacienteSeleccionado.id] = carritoConMg
       localStorage.setItem('medicamentosPorPaciente', JSON.stringify(medicamentosPorPaciente))
       localStorage.setItem('total', this.totalCarrito)
       this.$router.push('/dashboard/patient')
@@ -229,22 +330,54 @@ export default {
         this.showAddMedicineDialog = false
         this.$refs.form.reset()
       }).catch((error) => {
-        // eslint-disable-next-line no-console
+      // eslint-disable-next-line no-console
         console.error('Error al agregar medicina:', error)
       })
     },
-    deleteMedicine (nombre) {
-      const url = `/medicines/${nombre}`
+    confirmDeleteMedicine (medicina) {
+      this.selectedMedicine = medicina
+      this.showDeleteDialog = true
+    },
+    deleteMedicine () {
+      const url = `/medicines/${this.selectedMedicine.nombre}`
       this.$axios.delete(url, {
         headers: {
           Authorization: `Bearer ${this.token}`
         }
       }).then(() => {
         this.obtenerMedicina()
+        this.showDeleteDialog = false
       }).catch((error) => {
-        // eslint-disable-next-line no-console
+      // eslint-disable-next-line no-console
         console.error('Error al eliminar medicina:', error)
       })
+    },
+    openEditDialog (medicina) {
+      this.editMedicine = { ...medicina }
+      this.showEditMedicineDialog = true
+    },
+    updateMedicine () {
+      const url = `/medicines/${this.editMedicine.nombre}`
+      this.$axios.put(url, this.editMedicine, {
+        headers: {
+          Authorization: `Bearer ${this.token}`
+        }
+      }).then(() => {
+        this.obtenerMedicina()
+        this.showEditMedicineDialog = false
+        this.$refs.editForm.reset()
+      }).catch((error) => {
+      // eslint-disable-next-line no-console
+        console.error('Error al actualizar medicina:', error)
+      })
+    },
+    cancelAddMedicine () {
+      this.showAddMedicineDialog = false
+      this.$refs.form.reset()
+    },
+    cancelEditMedicine () {
+      this.showEditMedicineDialog = false
+      this.$refs.editForm.reset()
     },
     animateCart () {
       const cartIcon = this.$el.querySelector('.mdi-cart, .mdi-cart-outline')

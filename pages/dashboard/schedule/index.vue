@@ -28,17 +28,16 @@
       <v-row>
         <v-col cols="12" md="8">
           <v-row>
-            <!-- tarjetas de pacientes -->
             <v-col v-for="paciente in filteredPacientes" :key="paciente.id" cols="12">
               <v-card class="pa-3 mb-2 patient-card">
                 <div class="card-header">
                   <v-card-title>{{ paciente.nombre }}</v-card-title>
                   <div>
                     <v-btn color="blue" @click="verDetallePaciente(paciente)">
-                      Ver Detalle
+                      View Details
                     </v-btn>
                     <v-btn color="green" @click="gestionarMedicinas(paciente)">
-                      Ver Medicinas
+                      View Medicines
                     </v-btn>
                   </div>
                 </div>
@@ -49,11 +48,11 @@
                   />
                   <div class="patient-details">
                     <span><strong>E-mail:</strong> {{ paciente.email }}</span><br>
-                    <span><strong>Edad:</strong> {{ paciente.edad }} años</span><br>
-                    <span><strong>Sexo:</strong> {{ paciente.sexo }}</span><br>
-                    <span><strong>Teléfono:</strong> {{ paciente.telefono }}</span><br>
-                    <span><strong>Dirección:</strong> {{ paciente.direccion }}</span><br>
-                    <span><strong>Fecha:</strong> {{ paciente.fecha }}</span>
+                    <span><strong>Age:</strong> {{ paciente.edad }} years</span><br>
+                    <span><strong>Sex:</strong> {{ paciente.sexo }}</span><br>
+                    <span><strong>Phone Number:</strong> {{ paciente.telefono }}</span><br>
+                    <span><strong>Address:</strong> {{ paciente.direccion }}</span><br>
+                    <span><strong>Date:</strong> {{ paciente.fecha }}</span>
                   </div>
                 </v-card-text>
                 <v-card-actions>
@@ -68,37 +67,37 @@
 
         <v-col cols="12" md="4">
           <v-card class="pa-3 my-card form-card">
-            <v-card-title>For a Appointment</v-card-title>
+            <v-card-title>For an Appointment</v-card-title>
             <v-card-text>
               <v-form ref="form" lazy-validation>
                 <v-text-field
                   v-model="nombre"
-                  label="Nombre"
-                  placeholder="Escribe el nombre"
+                  label="Name"
+                  placeholder="Enter the name"
                   outlined
                   dense
-                  :rules="[v => !!v || 'Nombre es requerido']"
+                  :rules="[v => !!v || 'Name is required']"
                   style="background-color: transparent !important; border-radius: 15px"
                 />
                 <v-row>
                   <v-col cols="6">
                     <v-text-field
                       v-model="edad"
-                      label="Edad"
+                      label="Age"
                       outlined
                       dense
-                      :rules="[v => !!v || 'Edad es requerida', v => /^\d+$/.test(v) || 'Edad debe ser un número']"
+                      :rules="[v => !!v || 'Age is required', v => /^\d+$/.test(v) || 'Age must be a number']"
                       style="background-color: transparent !important; border-radius: 15px"
                     />
                   </v-col>
                   <v-col cols="6">
                     <v-select
                       v-model="sexo"
-                      :items="['Hombre', 'Mujer']"
-                      label="Sexo"
+                      :items="['Male', 'Female']"
+                      label="Sex"
                       outlined
                       dense
-                      :rules="[v => !!v || 'Sexo es requerido']"
+                      :rules="[v => !!v || 'Sex is required']"
                       style="background-color: transparent !important; border-radius: 15px"
                     />
                   </v-col>
@@ -107,29 +106,29 @@
                 <v-text-field
                   v-model="email"
                   label="E-mail"
-                  placeholder="Escribe el apellido e-mail"
+                  placeholder="Enter the e-mail"
                   outlined
                   dense
-                  :rules="[v => !!v || 'E-mail es requerido', v => /.+@.+\..+/.test(v) || 'E-mail debe ser válido']"
+                  :rules="[v => !!v || 'E-mail is required', v => /.+@.+\..+/.test(v) || 'E-mail must be valid']"
                   style="background-color: transparent !important; border-radius: 15px"
                 />
                 <v-text-field
                   v-model="telefono"
-                  label="Teléfono"
-                  placeholder="Escribe el teléfono"
+                  label="Phone Number"
+                  placeholder="Enter the phone number"
                   outlined
                   dense
-                  :rules="[v => !!v || 'Teléfono es requerido', v => /^\d{3}-\d{3}-\d{4}$/.test(v) || 'Teléfono debe ser válido (XXX-XXX-XXXX)']"
+                  :rules="[v => !!v || 'Phone Number is required', v => /^\d{3}-\d{3}-\d{4}$/.test(v) || 'Phone Number must be valid (XXX-XXX-XXXX)']"
                   style="background-color: transparent !important; border-radius: 15px"
                   @input="formatPhone"
                 />
                 <v-text-field
                   v-model="direccion"
-                  label="Direccion"
-                  placeholder="Escribe la direccion"
+                  label="Address"
+                  placeholder="Enter the address"
                   outlined
                   dense
-                  :rules="[v => !!v || 'Dirección es requerida']"
+                  :rules="[v => !!v || 'Address is required']"
                   style="background-color: transparent !important; border-radius: 15px"
                 />
                 <v-menu
@@ -145,18 +144,18 @@
                   <template #activator="{ on, attrs }">
                     <v-text-field
                       v-model="fecha"
-                      label="Fecha de cansulta"
+                      label="Consultation Date"
                       prepend-icon="mdi-calendar"
                       readonly
                       v-bind="attrs"
-                      :rules="[v => !!v || 'Fecha es requerida']"
+                      :rules="[v => !!v || 'Date is required']"
                       v-on="on"
                     />
                   </template>
                   <v-date-picker v-model="fecha" no-title scrollable>
                     <v-spacer />
                     <v-btn text color="primary" @click="menu = false">
-                      Cancelar
+                      Cancel
                     </v-btn>
                     <v-btn text color="primary" @click="$refs.menu.save(fecha)">
                       OK
@@ -167,7 +166,7 @@
             </v-card-text>
             <v-card-actions class="pt-0">
               <v-btn color="green" block @click="registrarPaciente">
-                Registrar
+                Booking
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -311,9 +310,7 @@ export default {
           })
       }
     },
-
     clearForm () {
-      // Limpia todos los campos del formulario después del registro
       this.nombre = null
       this.edad = null
       this.sexo = null
@@ -321,11 +318,8 @@ export default {
       this.telefono = null
       this.direccion = null
       this.fecha = null
-
-      // Reinicia la validación del formulario
       this.$refs.form.resetValidation()
     },
-
     borrarPaciente () {
       const url = `/patients/${this.patientToDelete.id}`
       this.$axios.delete(url)

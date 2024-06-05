@@ -4,59 +4,58 @@
       <v-card-title>{{ paciente.nombre }}</v-card-title>
       <v-card-text>
         <div>
+          <strong>Age:</strong> {{ paciente.edad }} years<br>
+          <strong>Sex:</strong> {{ paciente.sexo }}<br>
+          <strong>Phone Number:</strong> {{ paciente.telefono }}<br>
           <strong>E-mail:</strong> {{ paciente.email }}<br>
-          <strong>Edad:</strong> {{ paciente.edad }} años<br>
-          <strong>Sexo:</strong> {{ paciente.sexo }}<br>
-          <strong>Teléfono:</strong> {{ paciente.telefono }}<br>
-          <strong>Dirección:</strong> {{ paciente.direccion }}<br>
-          <strong>Fecha:</strong> {{ paciente.fecha }}
+          <strong>Address:</strong> {{ paciente.direccion }}<br>
         </div>
       </v-card-text>
     </v-card>
 
     <v-card v-if="!enfermedadEnviada" class="pa-3 mb-4 enfermedad-card">
-      <v-card-title>Enfermedad del Paciente</v-card-title>
+      <v-card-title>Patient's Disease</v-card-title>
       <v-card-text>
         <v-text-field
           v-model="enfermedadPaciente.enfermedad"
-          label="Enfermedad"
+          label="Disease"
           outlined
           class="mb-4"
         />
         <v-textarea
           v-model="enfermedadPaciente.descripcionEnfermedad"
-          label="Descripción de la enfermedad"
+          label="Disease Description"
           outlined
           height="40px"
         />
       </v-card-text>
       <v-card-actions class="justify-end">
         <v-btn color="blue" text @click="enviarEnfermedad">
-          Enviar Enfermedad
+          Submit Disease
         </v-btn>
       </v-card-actions>
     </v-card>
 
     <v-card v-if="enfermedadEnviada" class="pa-3 mb-4 enfermedad-card">
-      <v-card-title>Enfermedad del Paciente</v-card-title>
+      <v-card-title>Patient's Disease</v-card-title>
       <v-card-text>
         <div>
-          <strong>Enfermedad:</strong> {{ enfermedadPaciente.enfermedad }}<br>
-          <strong>Descripción:</strong> {{ enfermedadPaciente.descripcionEnfermedad }}
+          <strong>Disease:</strong> {{ enfermedadPaciente.enfermedad }}<br>
+          <strong>Description:</strong> {{ enfermedadPaciente.descripcionEnfermedad }}
         </div>
       </v-card-text>
     </v-card>
 
-    <!-- Mostrar los medicamentos en tarjetas -->
+    <!-- Display medicines in cards -->
     <v-row>
       <v-col v-for="(medicina, index) in medicinas" :key="index" cols="12">
         <v-card class="pa-3 mb-4 medicina-card">
           <v-card-title>{{ medicina.nombre }}</v-card-title>
           <v-card-subtitle>{{ medicina.descripcion }}</v-card-subtitle>
           <v-card-text>
-            <strong>Horas:</strong> Cada {{ medicina.duracion }}<br>
+            <strong>Hours:</strong> Every {{ medicina.duracion }} hours<br>
             <div class="d-flex align-center">
-              <strong>Días:</strong>
+              <strong>Days:</strong>
               <v-text-field
                 v-model="medicina.dias"
                 type="number"
@@ -65,14 +64,14 @@
                 outlined
                 dense
                 class="small-input"
-                :rules="[v => !!v || 'Días es requerido', v => /^\d+$/.test(v) || 'Días debe ser un número']"
+                :rules="[v => !!v || 'Days are required', v => /^\d+$/.test(v) || 'Days must be a number']"
                 style="width: 100px; margin-left: 8px;"
               />
             </div>
           </v-card-text>
           <v-card-actions class="justify-end">
             <v-btn color="blue" text @click="enviarMedicamento(index)">
-              Enviar
+              Submit
             </v-btn>
           </v-card-actions>
         </v-card>

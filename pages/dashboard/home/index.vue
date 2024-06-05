@@ -33,7 +33,7 @@
     <!-- Inicio del segundo componente -->
     <v-row class="gap-4 mt-4">
       <!-- Ajustamos las columnas aquí -->
-      <v-col cols="12" md="4">
+      <v-col cols="12" md="5">
         <v-card class="pa-6" color="#ffdec8" elevation="2" style="height: auto;">
           <v-card-title class="text-h5 font-weight-bold mb-4">
             Appointment
@@ -65,7 +65,7 @@
           </v-list>
         </v-card>
       </v-col>
-      <v-col cols="12" md="8">
+      <v-col cols="12" md="7">
         <v-card class="pa-6" color="#ffdec8" elevation="2">
           <v-card-title class="text-h5 font-weight-bold mb-4">
             Recent Activity
@@ -81,6 +81,7 @@
                     {{ activity.doctor }}
                   </v-list-item-title>
                   <v-list-item-subtitle>{{ activity.specialty }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>{{ activity.description }}</v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-action>
                   <v-chip :color="activity.statusColor" small />
@@ -202,21 +203,24 @@ export default {
           doctor: 'Dr. Daniel MBBS,.MS.',
           specialty: 'Orthopedists Specialist',
           image: 'batcat.png',
-          statusColor: 'green'
+          statusColor: 'green',
+          description: 'Dr. Daniel specializes in orthopedics with over 10 years of experience.'
         },
         {
           id: 2,
           doctor: 'Dr. Itzel MBBS,.MS.',
           specialty: 'Hearts Specialist',
           image: 'docat.jpg',
-          statusColor: 'red'
+          statusColor: 'red',
+          description: 'Dr. Itzel is a leading heart specialist with numerous successful surgeries.'
         },
         {
           id: 3,
           doctor: 'Dr. Yoselin MBBS,.MS.',
           specialty: 'Lungs Specialist',
           image: 'docat.jpg',
-          statusColor: 'green'
+          statusColor: 'green',
+          description: 'Dr. Yoselin has a remarkable career in treating lung diseases.'
         }
       ],
       medications: [],
@@ -285,6 +289,7 @@ export default {
       const pacienteSeleccionado = JSON.parse(localStorage.getItem('pacienteSeleccionado'))
       const pacientes = JSON.parse(localStorage.getItem('pacientes')) || []
 
+      // Eliminar paciente de la lista
       const pacientesActualizados = pacientes.filter(p => p.id !== pacienteSeleccionado.id)
       localStorage.setItem('pacientes', JSON.stringify(pacientesActualizados))
 
@@ -297,6 +302,7 @@ export default {
       this.enfermedadPaciente = {}
       this.totalAmount = 0
 
+      // Notificar al backend para que borre el paciente de la base de datos
       this.$axios.delete(`/patients/${pacienteSeleccionado.id}`).then(() => {
         // eslint-disable-next-line no-console
         console.log('Paciente eliminado del backend')
@@ -340,8 +346,8 @@ export default {
 }
 
 .appointment-list {
-  height: 400px;
-  max-height: 280px;
+  height: 308px;
+  max-height: 308px;
   overflow-y: auto;
 }
 

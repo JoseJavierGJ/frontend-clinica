@@ -204,6 +204,7 @@
 import { mapState } from 'vuex'
 export default {
   layout: 'dashboard',
+  middleware: 'auth',
   auth: true,
   data () {
     return {

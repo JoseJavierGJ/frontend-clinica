@@ -202,6 +202,7 @@
 export default {
   name: 'CombinedComponent',
   layout: 'dashboard',
+  middleware: 'auth',
   auth: true,
   data () {
     return {

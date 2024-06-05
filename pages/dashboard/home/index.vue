@@ -38,7 +38,7 @@
           <v-card-title class="text-h5 font-weight-bold mb-4">
             Appointment
           </v-card-title>
-          <v-list color="#ffdec8">
+          <v-list color="#ffdec8" class="appointment-list">
             <v-list-item>
               <v-list-item-avatar>
                 <v-img :src="require('@/assets/images/docat.jpg')" alt="Doctor Image" />
@@ -98,7 +98,7 @@
           <v-card-title class="text-h5 font-weight-bold mb-4">
             Medication
           </v-card-title>
-          <v-list color="#ffc198">
+          <v-list color="#ffc198" class="medication-list">
             <v-list-item-group>
               <v-list-item v-for="medication in medications" :key="medication.nombre">
                 <v-list-item-content class="d-flex justify-space-between align-center">
@@ -122,7 +122,7 @@
 
       <!-- Current Condition Section -->
       <v-col>
-        <v-card class="pa-6" elevation="2" color="#ffdec8">
+        <v-card class="pa-6 current-condition-card" elevation="2" color="#ffdec8">
           <v-card-title class="text-h5 font-weight-bold mb-4">
             Current Condition Of Patients
           </v-card-title>
@@ -285,7 +285,6 @@ export default {
       const pacienteSeleccionado = JSON.parse(localStorage.getItem('pacienteSeleccionado'))
       const pacientes = JSON.parse(localStorage.getItem('pacientes')) || []
 
-      // Eliminar paciente de la lista
       const pacientesActualizados = pacientes.filter(p => p.id !== pacienteSeleccionado.id)
       localStorage.setItem('pacientes', JSON.stringify(pacientesActualizados))
 
@@ -298,7 +297,6 @@ export default {
       this.enfermedadPaciente = {}
       this.totalAmount = 0
 
-      // Notificar al backend para que borre el paciente de la base de datos
       this.$axios.delete(`/patients/${pacienteSeleccionado.id}`).then(() => {
         // eslint-disable-next-line no-console
         console.log('Paciente eliminado del backend')
@@ -339,5 +337,21 @@ export default {
 
 .patient-item {
   cursor: pointer;
+}
+
+.appointment-list {
+  height: 400px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.medication-list {
+  height: 455px;
+  max-height: 344px;
+  overflow-y: auto;
+}
+
+.current-condition-card {
+  height: 455px;
 }
 </style>

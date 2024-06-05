@@ -11,3 +11,14 @@ export const mutations = {
     state.token = token
   }
 }
+
+export const actions = {
+  login ({ commit }, { user, token }) {
+    commit('setUser', user)
+    commit('setToken', token)
+  },
+  logout ({ commit }) {
+    commit('setUser', null)
+    commit('setToken', null)
+  }
+}

@@ -68,13 +68,13 @@
     </v-container>
 
     <!-- Diálogo de confirmación de eliminación -->
-    <v-dialog v-model="showDeleteDialog" max-width="500px">
+    <v-dialog v-model="showDeleteDialog" max-width="500px" persistent>
       <v-card>
         <v-card-title>Confirm Delete</v-card-title>
         <v-card-text>
           Are you sure you want to delete the medicine "{{ selectedMedicine.nombre }}"?
         </v-card-text>
-        <v-card-actions>
+        <v-card-actions class="justify-space-between">
           <v-btn color="red" text @click="showDeleteDialog = false">
             Cancel
           </v-btn>
@@ -86,7 +86,7 @@
     </v-dialog>
 
     <!-- Diálogo para el carrito de compras -->
-    <v-dialog v-model="showCartDialog" max-width="500px">
+    <v-dialog v-model="showCartDialog" max-width="500px" persistent>
       <v-card>
         <v-card-title>Medicine Order</v-card-title>
         <v-card-text>
@@ -101,7 +101,7 @@
             <strong>Total: ${{ totalCarrito }}</strong>
           </div>
         </v-card-text>
-        <v-card-actions>
+        <v-card-actions class="justify-space-between">
           <v-btn color="red" text @click="showCartDialog = false">
             Close
           </v-btn>
@@ -113,7 +113,7 @@
     </v-dialog>
 
     <!-- Diálogo para agregar medicamentos -->
-    <v-dialog v-model="showAddMedicineDialog" max-width="500px">
+    <v-dialog v-model="showAddMedicineDialog" max-width="500px" persistent>
       <v-card>
         <v-card-title>Add Medicine</v-card-title>
         <v-card-text>
@@ -153,7 +153,7 @@
             />
           </v-form>
         </v-card-text>
-        <v-card-actions>
+        <v-card-actions class="justify-space-between">
           <v-btn color="red" text @click="cancelAddMedicine">
             Cancel
           </v-btn>
@@ -165,7 +165,7 @@
     </v-dialog>
 
     <!-- Diálogo para editar medicamentos -->
-    <v-dialog v-model="showEditMedicineDialog" max-width="500px">
+    <v-dialog v-model="showEditMedicineDialog" max-width="500px" persistent>
       <v-card>
         <v-card-title>Edit Medicine</v-card-title>
         <v-card-text>
@@ -204,7 +204,7 @@
             />
           </v-form>
         </v-card-text>
-        <v-card-actions>
+        <v-card-actions class="justify-space-between">
           <v-btn color="red" text @click="cancelEditMedicine">
             Cancel
           </v-btn>
@@ -280,7 +280,7 @@ export default {
       }).then((res) => {
         this.medicinas = res.data.medicines.map(m => ({ ...m, cantidad: 0 }))
       }).catch((error) => {
-      // eslint-disable-next-line no-console
+        // eslint-disable-next-line no-console
         console.error('Error al obtener medicinas:', error)
       })
     },
@@ -308,7 +308,6 @@ export default {
       const pacienteSeleccionado = JSON.parse(localStorage.getItem('pacienteSeleccionado'))
       const medicamentosPorPaciente = JSON.parse(localStorage.getItem('medicamentosPorPaciente')) || {}
 
-      // Añade mg al nombre de la medicina
       const carritoConMg = this.carrito.map(medicina => ({
         ...medicina,
         nombre: `${medicina.nombre} (${medicina.mg} mg)`
@@ -330,7 +329,7 @@ export default {
         this.showAddMedicineDialog = false
         this.$refs.form.reset()
       }).catch((error) => {
-      // eslint-disable-next-line no-console
+        // eslint-disable-next-line no-console
         console.error('Error al agregar medicina:', error)
       })
     },
@@ -348,7 +347,7 @@ export default {
         this.obtenerMedicina()
         this.showDeleteDialog = false
       }).catch((error) => {
-      // eslint-disable-next-line no-console
+        // eslint-disable-next-line no-console
         console.error('Error al eliminar medicina:', error)
       })
     },
@@ -367,7 +366,7 @@ export default {
         this.showEditMedicineDialog = false
         this.$refs.editForm.reset()
       }).catch((error) => {
-      // eslint-disable-next-line no-console
+        // eslint-disable-next-line no-console
         console.error('Error al actualizar medicina:', error)
       })
     },
@@ -417,5 +416,11 @@ export default {
   75% {
     transform: translateX(-5px);
   }
+}
+
+.v-card-actions .justify-space-between {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 }
 </style>

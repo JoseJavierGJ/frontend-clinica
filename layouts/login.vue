@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app style="overflow-y: hidden">
     <v-main>
       <v-sheet
         class="pa-0 ma-0"

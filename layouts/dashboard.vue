@@ -54,7 +54,7 @@
           {{ userEmail }}
         </div>
         <div>
-          {{ userNombre }}
+          {{ userNombre }} {{ userApaterno }}
         </div>
 
         <v-btn
@@ -96,6 +96,7 @@ export default {
       drawer: null,
       userEmail: '',
       userNombre: '',
+      userApaterno: '',
       hover: false,
       links: [
         { icon: 'mdi-view-dashboard', text: 'Dashboard', route: '/dashboard/home' },
@@ -108,6 +109,7 @@ export default {
   mounted () {
     this.fetchUserEmail()
     this.fetchUserName()
+    this.fetchUserApaterno()
   },
   methods: {
     fetchUserEmail () {
@@ -117,6 +119,10 @@ export default {
     fetchUserName () {
       const nombre = localStorage.getItem('userName')
       this.userNombre = nombre || 'No disponible'
+    },
+    fetchUserApaterno () {
+      const apaterno = localStorage.getItem('userApaterno')
+      this.userApaterno = apaterno || 'No disponible'
     },
     logout () {
       localStorage.removeItem('userEmail')

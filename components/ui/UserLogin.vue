@@ -1,5 +1,5 @@
 <template>
-  <v-card rounded color="#EC9143" class="pa-7" style="height: 70%!important; margin-right: 40px;">
+  <v-card rounded color="#EC9143" class="pa-7" style="height: 70%!important; margin-right: 40px; overflow-y: hidden">
     <v-card-title>
       <v-row class="rowCard fontTitle">
         Welcome
@@ -246,7 +246,8 @@ export default {
         if (result.message === 'success') {
           localStorage.setItem('userEmail', this.email)
           localStorage.setItem('userName', result.userNombre)
-          localStorage.setItem('userSpecialty', result.userSpecialty)
+          localStorage.setItem('userApaterno', result.userApaterno) // Almacena apaterno
+          localStorage.setItem('userSpecialty', result.userEspecialidad)
           this.$router.push('/dashboard/home')
         }
       } catch (err) {
@@ -340,7 +341,7 @@ export default {
 }
 html {
   /* height: 100%; */
-  overflow: hidden;
+  overflow-y: hidden;
 }
 
 .v-application .rounded {

@@ -43,7 +43,7 @@
                 </div>
                 <v-card-text class="patient-card-content">
                   <v-img
-                    :src="require('@/assets/images/docat.jpg')"
+                    :src="require(`@/assets/images/${getImageForPatient(paciente.sexo)}`)"
                     class="patient-image"
                   />
                   <div class="patient-details">
@@ -202,6 +202,7 @@
 
 <script>
 import { mapState } from 'vuex'
+
 export default {
   layout: 'dashboard',
   middleware: 'auth',
@@ -272,7 +273,7 @@ export default {
       patientToUpdate: {},
       showUpdate: false,
       menu: false,
-      minDate: null // No hay fecha mínima ahora
+      minDate: null
     }
   },
   computed: {
@@ -400,6 +401,12 @@ export default {
     setMinDate () {
       const today = new Date()
       this.minDate = today.toISOString().substr(0, 10)
+    },
+    getImageForPatient (sexo) {
+      const maleImages = ['pacienteH.png']
+      const femaleImages = ['pacienteM.png']
+      const images = sexo === 'Male' ? maleImages : femaleImages
+      return images[Math.floor(Math.random() * images.length)]
     }
   }
 }

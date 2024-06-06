@@ -25,7 +25,7 @@
           Isolated For A Minimum Of 14 Days
         </p>
       </v-col>
-      <v-btn color="blue darken-2" class="white--text">
+      <v-btn color="blue darken-2" class="white--text" @click="redirectToLink">
         See More
       </v-btn>
     </v-card>
@@ -175,7 +175,7 @@
             </v-col>
           </v-row>
           <div class="caption mb-4">
-            Paid On The 27 April, 2020 To Dorian Med Pty Ltd
+            Paid On The {{ formattedDate }} To Dorian Med Pty Ltd
           </div>
           <div class="caption mb-4">
             Suite 206/203-233 New King James Rd, Edgecliff NSW 2027
@@ -202,7 +202,7 @@ export default {
           id: 1,
           doctor: 'Dr. Daniel MBBS,.MS.',
           specialty: 'Orthopedists Specialist',
-          image: 'batcat.png',
+          image: 'doc.svg',
           statusColor: 'green',
           description: 'Dr. Daniel specializes in orthopedics with over 10 years of experience.'
         },
@@ -210,17 +210,17 @@ export default {
           id: 2,
           doctor: 'Dr. Itzel MBBS,.MS.',
           specialty: 'Hearts Specialist',
-          image: 'docat.jpg',
+          image: 'doc2.svg',
           statusColor: 'red',
           description: 'Dr. Itzel is a leading heart specialist with numerous successful surgeries.'
         },
         {
           id: 3,
-          doctor: 'Dr. Yoselin MBBS,.MS.',
+          doctor: 'Dr. Micheal MBBS,.MS.',
           specialty: 'Lungs Specialist',
-          image: 'docat.jpg',
+          image: 'doc3.svg',
           statusColor: 'green',
-          description: 'Dr. Yoselin has a remarkable career in treating lung diseases.'
+          description: 'Dr. Micheal has a remarkable career in treating lung diseases.'
         }
       ],
       medications: [],
@@ -229,7 +229,8 @@ export default {
       enfermedadPaciente: {},
       pacientes: [],
       userEspecialidad: '',
-      userNombre: ''
+      userNombre: '',
+      formattedDate: this.formatDate(new Date())
     }
   },
   computed: {
@@ -261,7 +262,7 @@ export default {
   },
   methods: {
     fetchUserEspecialidad () {
-      const especialidad = localStorage.getItem('userEspecialidad')
+      const especialidad = localStorage.getItem('userSpecialty')
       this.userEspecialidad = especialidad || 'No disponible'
     },
     fetchUserName () {
@@ -314,6 +315,10 @@ export default {
     },
     actualizarPacientes (idEliminado) {
       this.pacientes = this.pacientes.filter(paciente => paciente.id !== idEliminado)
+    },
+    formatDate (date) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' }
+      return date.toLocaleDateString('en-US', options)
     }
   }
 }
@@ -358,6 +363,8 @@ export default {
 }
 
 .current-condition-card {
+  max-height: 455px;
+  overflow-y: auto;
   height: 455px;
 }
 </style>

@@ -261,6 +261,9 @@ export default {
     }
   },
   methods: {
+    redirectToLink () {
+      window.location.href = 'https://www.medicalnewstoday.com/coronavirus'
+    },
     fetchUserEspecialidad () {
       const especialidad = localStorage.getItem('userSpecialty')
       this.userEspecialidad = especialidad || 'No disponible'
@@ -303,7 +306,7 @@ export default {
       this.enfermedadPaciente = {}
       this.totalAmount = 0
 
-      // Notificar al backend para que borre el paciente de la base de datos
+      // Borrar al paciente de la base de datos
       this.$axios.delete(`/patients/${pacienteSeleccionado.id}`).then(() => {
         // eslint-disable-next-line no-console
         console.log('Paciente eliminado del backend')
